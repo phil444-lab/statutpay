@@ -1,0 +1,37 @@
+<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg" role="img">
+ <title>Étape 4 — Envoyer la capture d'écran pour vérification IA</title>
+
+ <desc>Capture d'écran envoyée vers un système IA qui l'analyse et valide</desc>
+ <g>
+  <title>Layer 1</title>
+  <rect id="svg_1" fill="#efe5fd" rx="16" height="200" width="200"/>
+  <rect id="svg_2" fill="#c49ef5" rx="8" height="106" width="62" y="30" x="14"/>
+  <rect id="svg_3" fill="#4c07b" rx="4" height="86" width="50" y="40" x="20"/>
+  <rect id="svg_4" fill="#2d0470" rx="4" height="14" width="50" y="40" x="20"/>
+  <text id="svg_5" fill="#ffffff" font-size="6" font-family="Arial, sans-serif" text-anchor="middle" y="50.5" x="45">Mon Status</text>
+  <rect id="svg_6" fill="#2d0470" rx="3" height="28" width="42" y="58" x="24"/>
+  <text style="cursor: move;" transform="matrix(0.830967 0 0 1 3.70133 0)" stroke="null" id="svg_7" fill="#efe5fd" font-weight="bold" font-size="6" font-family="Arial, sans-serif" text-anchor="middle" y="69.46809" x="49.6995">MOTO EXPRESS</text>
+  <text id="svg_8" fill="#c49ef5" font-size="5" font-family="Arial, sans-serif" text-anchor="middle" y="78.22695" x="45.35461">Livraison Cotonou</text>
+  <rect stroke="null" id="svg_9" fill="#7a2fd4" rx="2" height="14.20567" width="42" y="90" x="24"/>
+  <text id="svg_10" fill="#efe5fd" font-size="5.5" font-family="Arial, sans-serif" text-anchor="middle" y="94.72695" x="45.88652">Vu par 47</text>
+  <text transform="matrix(0.924063 0 0 1 1.55545 0)" stroke="null" id="svg_11" fill="#c49ef5" font-size="6" font-family="Arial, sans-serif" text-anchor="middle" y="120.96454" x="47.3025">capture_status.jpg</text>
+  <line fill="#efe5fd" id="svg_12" stroke-dasharray="4,3" stroke-width="2" y2="100" x2="114" y1="100" x1="82"/>
+  <polygon id="svg_13" fill="#4c07b" points="114,96 122,100 114,104"/>
+  <rect id="svg_14" fill="#4c07b" rx="10" height="76" width="62" y="62" x="124"/>
+  <text id="svg_15" fill="#efe5fd" font-weight="bold" font-size="14" font-family="Arial, sans-serif" text-anchor="middle" y="88" x="155">IA</text>
+  <text id="svg_16" fill="#c49ef5" font-size="7" font-family="Arial, sans-serif" text-anchor="middle" y="102" x="155">Analyse</text>
+  <text id="svg_17" fill="#c49ef5" font-size="7" font-family="Arial, sans-serif" text-anchor="middle" y="112" x="155">en cours...</text>
+  <circle id="svg_18" fill="#c49ef5" r="3" cy="124" cx="145"/>
+  <circle id="svg_19" fill="#7a2fd4" r="3" cy="124" cx="155"/>
+  <circle id="svg_20" fill="#efe5fd" r="3" cy="124" cx="165"/>
+  <rect id="svg_21" fill="#efe5fd" rx="8" height="22" width="62" y="148" x="124"/>
+  <circle id="svg_22" fill="#4c07b" r="7" cy="149.62003" cx="138.54849"/>
+  <polyline id="svg_23" stroke-linejoin="round" stroke-linecap="round" stroke-width="1.8" stroke="#ffffff" fill="none" points="134.38950729370117,150.25596141815186 137.38950729370117,153.25596141815186 142.38950729370117,146.25596141815186 "/>
+  <text id="svg_24" fill="#2d0470" font-weight="bold" font-size="8" font-family="Arial, sans-serif" text-anchor="middle" y="152.9841" x="162.15898">Validé !</text>
+  <text id="svg_25" fill="#efe5fd" font-size="5.5" font-family="Arial, sans-serif" text-anchor="middle" y="101.64184" x="46.24113">personnes</text>
+  <polygon id="svg_28" fill="#4c07b" points="97.79316139221191,96.1458511352539 105.79316139221191,100.1458511352539 97.79316139221191,104.1458511352539 "/>
+  <polygon id="svg_29" fill="#4c07b" points="89.62923836708069,96.2190170288086 97.62923836708069,100.2190170288086 89.62923836708069,104.2190170288086 "/>
+  <polygon id="svg_30" fill="#4c07b" points="105.94347953796387,96.28608703613281 113.94347953796387,100.28608703613281 105.94347953796387,104.28608703613281 "/>
+  <polygon id="svg_31" fill="#4c07b" points="81.40858459472656,96.15898251533508 89.40858459472656,100.15898251533508 81.40858459472656,104.15898251533508 "/>
+ </g>
+</svg>

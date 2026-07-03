@@ -1,0 +1,29 @@
+<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg" role="img">
+ <title>Étape 3 — Publier la pub sur WhatsApp Status 24h</title>
+
+ <desc>Téléphone avec visuel publicitaire sur WhatsApp Status et timer 24h</desc>
+ <g>
+  <title>Layer 1</title>
+  <rect id="svg_1" fill="#efe5fd" rx="16" height="200" width="200"/>
+  <rect id="svg_2" fill="#c49ef5" rx="14" height="162" width="90" y="15" x="55"/>
+  <rect id="svg_3" fill="#4c07b" rx="6" height="134" width="76" y="28" x="62"/>
+  <rect id="svg_4" fill="#2d0470" rx="3" height="6" width="32" y="17" x="84"/>
+  <rect id="svg_5" fill="#2d0470" rx="2.5" height="5" width="24" y="167" x="88"/>
+  <rect id="svg_6" fill="#2d0470" rx="6" height="18" width="76" y="28" x="62"/>
+  <text id="svg_7" font-weight="bold" fill="#ffffff" font-size="7" font-family="Arial, sans-serif" text-anchor="middle" y="40" x="100">Mon Status</text>
+  <rect id="svg_8" fill="#2d0470" rx="1.5" height="3" width="68" y="49" x="66"/>
+  <rect id="svg_9" fill="#c49ef5" rx="1.5" height="3" width="44" y="49" x="66"/>
+  <rect id="svg_10" fill="#2d0470" height="88" width="76" y="54" x="62"/>
+  <rect id="svg_11" fill="#4c07b" rx="4" height="44" width="64" y="60" x="68"/>
+  <text transform="matrix(0.860439 0 0 1 8.94326 0)" stroke="null" id="svg_12" fill="#efe5fd" font-weight="bold" font-size="9" font-family="Arial, sans-serif" text-anchor="middle" y="73.05911" x="105.97532">MOTO EXPRESS</text>
+  <text stroke="null" id="svg_13" fill="#c49ef5" font-size="7" font-family="Arial, sans-serif" text-anchor="middle" y="87.11567" x="100.25707">Livraison rapide</text>
+  <rect stroke="null" id="svg_14" fill="#7a2fd4" rx="3" height="16.31363" width="69.19286" y="108" x="65.40357"/>
+  <text id="svg_15" fill="#ffffff" font-weight="bold" font-size="7" font-family="Arial, sans-serif" text-anchor="middle" y="118.5" x="100">Appeler maintenant</text>
+  <rect id="svg_16" fill="#2d0470" height="20" width="76" y="142" x="62"/>
+  <rect id="svg_17" fill="#2d0470" height="8" width="76" y="154" x="62"/>
+  <text id="svg_18" fill="#c49ef5" font-size="7" font-family="Arial, sans-serif" text-anchor="middle" y="153" x="100">Vu par 47 personnes</text>
+  <rect stroke="null" id="svg_19" fill="#efe5fd" rx="10" height="14.60153" width="21.91771" y="126.00531" x="89.64002"/>
+  <text id="svg_20" fill="#4c07b" font-weight="bold" font-size="9" font-family="Arial, sans-serif" text-anchor="middle" y="136.43461" x="100.98448">24h</text>
+  <text style="cursor: move;" stroke="null" id="svg_22" fill="#c49ef5" font-size="7" font-family="Arial, sans-serif" text-anchor="middle" y="97.39847" x="101.79949">à Cotonou</text>
+ </g>
+</svg>

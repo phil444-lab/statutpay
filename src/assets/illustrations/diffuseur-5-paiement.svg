@@ -1,0 +1,28 @@
+<svg width="199.99999999999997" height="199.99999999999997" xmlns="http://www.w3.org/2000/svg" role="img">
+ <title>Étape 5 — Recevoir le paiement sur Mobile Money</title>
+
+ <desc>Notification de paiement reçu sur MTN MoMo avec montant en FCFA</desc>
+ <g>
+  <title>Layer 1</title>
+  <rect id="svg_1" fill="#efe5fd" rx="16" height="200" width="200"/>
+  <rect id="svg_2" fill="#c49ef5" rx="14" height="164" width="96" y="18" x="52"/>
+  <rect id="svg_3" fill="#f5f0ff" rx="6" height="140" width="82" y="30" x="59"/>
+  <rect id="svg_4" fill="#2d0470" rx="3" height="6" width="36" y="20" x="82"/>
+  <rect id="svg_5" fill="#2d0470" rx="2.5" height="5" width="24" y="172" x="88"/>
+  <text id="svg_6" fill="#5F5E5A" font-size="8" font-family="Arial, sans-serif" text-anchor="middle" y="45" x="100">10:34</text>
+  <rect id="svg_7" fill="#4c07b" rx="8" height="90" width="74" y="52" x="63"/>
+  <rect id="svg_8" fill="#4c07b" rx="8" height="30" width="74" y="52" x="63"/>
+  <rect id="svg_9" fill="#4c07b" height="14" width="74" y="68" x="63"/>
+  <text id="svg_10" fill="#efe5fd" font-weight="bold" font-size="11" font-family="Arial, sans-serif" text-anchor="middle" y="64" x="100">StatusPay</text>
+  <text id="svg_11" fill="#c49ef5" font-size="7" font-family="Arial, sans-serif" text-anchor="middle" y="75" x="100">Vous avez reçu</text>
+  <rect id="svg_12" fill="#ffffff" rx="6" height="28" width="66" y="82" x="67"/>
+  <text id="svg_13" fill="#4c07b" font-weight="bold" font-size="14" font-family="Arial, sans-serif" text-anchor="middle" y="97" x="100">2 000</text>
+  <text id="svg_14" fill="#5F5E5A" font-size="7" font-family="Arial, sans-serif" text-anchor="middle" y="107" x="100">FCFA</text>
+  <text transform="matrix(0.933836 0 0 1 4.14552 0)" stroke="null" id="svg_15" fill="#efe5fd" font-size="7" font-family="Arial, sans-serif" text-anchor="middle" y="120.83721" x="103.42424">De : StatusPay Platform</text>
+  <text id="svg_16" fill="#c49ef5" font-size="6.5" font-family="Arial, sans-serif" text-anchor="middle" y="132" x="100">Réf. mission #4821</text>
+  <rect id="svg_17" fill="#7a2fd4" rx="4" height="12" width="56" y="136" x="72"/>
+  <text id="svg_18" fill="#ffffff" font-weight="bold" font-size="7" font-family="Arial, sans-serif" text-anchor="middle" y="145" x="100">Voir mon solde</text>
+  <rect id="svg_19" fill="#f5f0ff" rx="6" height="12" width="74" y="154" x="63"/>
+  <text id="svg_20" font-weight="bold" fill="#2d0470" font-size="7" font-family="Arial, sans-serif" text-anchor="middle" y="163" x="100">Solde : 14 500 FCFA</text>
+ </g>
+</svg>

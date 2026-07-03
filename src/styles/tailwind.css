@@ -1,0 +1,18 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&display=swap');
+
+@import 'tailwindcss' source(none);
+@source '../**/*.{js,ts,jsx,tsx}';
+
+@import 'tw-animate-css';
+
+@theme {
+  --color-violet: #4c075b;
+  --color-gold: #c9a227;
+  --color-purple: #7c3aed;
+  --color-purple-hover: #6d28d9;
+  --color-violet-dark: #3a0547;
+  --color-dark-bg: #0f0514;
+  --color-gray-900: #1a1a2e;
+  --font-inter: 'Inter', sans-serif;
+  --font-playfair: 'Playfair Display', serif;
+}

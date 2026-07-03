@@ -1,0 +1,36 @@
+<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg" role="img">
+ <title>Étape 3 annonceur — Vérification automatique des preuves par l'IA</title>
+
+ <desc>Captures d'écran analysées par l'IA avec résultats de validation</desc>
+ <g>
+  <title>Layer 1</title>
+  <rect id="svg_1" fill="#efe5fd" rx="16" height="200" width="200"/>
+  <rect id="svg_2" transform="rotate(-6 50 80)" fill="#c49ef5" rx="6" height="84" width="56" y="38" x="22"/>
+  <rect id="svg_3" transform="rotate(-2 54 76)" fill="#7a2fd4" rx="6" height="84" width="56" y="34" x="26"/>
+  <rect id="svg_4" fill="#4c07b" rx="8" height="96" width="60" y="30" x="24"/>
+  <rect id="svg_5" fill="#efe5fd" rx="4" height="78" width="50" y="38" x="29"/>
+  <rect id="svg_6" fill="#2d0470" rx="4" height="20" width="50" y="38" x="29"/>
+  <text id="svg_7" fill="#ffffff" font-size="6.5" font-family="Arial, sans-serif" text-anchor="middle" y="51" x="54">Mon Status</text>
+  <rect id="svg_8" fill="#4c07b" rx="3" height="28" width="44" y="62" x="32"/>
+  <text transform="matrix(0.884777 0 0 1 3.46282 0)" stroke="null" id="svg_9" fill="#efe5fd" font-weight="bold" font-size="6" font-family="Arial, sans-serif" text-anchor="middle" y="74.16722" x="57.30504">MOTO EXPRESS</text>
+  <text id="svg_10" fill="#c49ef5" font-size="5" font-family="Arial, sans-serif" text-anchor="middle" y="83" x="54">Livraison Cotonou</text>
+  <text id="svg_11" fill="#5F5E5A" font-size="6" font-family="Arial, sans-serif" text-anchor="middle" y="106" x="54">Vu par 47 pers.</text>
+  <line id="svg_12" stroke-width="2" stroke="#4c07b" y2="90" x2="108" y1="90" x1="90"/>
+  <polygon id="svg_13" fill="#4c07b" points="105.15719032287598,86 113.15719032287598,90 105.15719032287598,94 "/>
+  <rect id="svg_14" fill="#2d0470" rx="10" height="56" width="62" y="62" x="114"/>
+  <text id="svg_15" fill="#efe5fd" font-weight="bold" font-size="16" font-family="Arial, sans-serif" text-anchor="middle" y="87" x="145">IA</text>
+  <text id="svg_16" fill="#c49ef5" font-size="6.5" font-family="Arial, sans-serif" text-anchor="middle" y="102" x="145">Vérification</text>
+  <text id="svg_17" fill="#c49ef5" font-size="6.5" font-family="Arial, sans-serif" text-anchor="middle" y="111" x="145">automatique</text>
+  <rect stroke="#c49ef5" id="svg_18" fill="#ffffff" rx="8" height="22" width="158.52174" y="138" x="24"/>
+  <circle id="svg_19" fill="#4c07b" r="8" cy="149" cx="36.48161"/>
+  <polyline id="svg_20" stroke-linejoin="round" stroke-linecap="round" stroke-width="1.8" stroke="#ffffff" fill="none" points="32.6488299369812,149.66889625787735 35.6488299369812,152.66889625787735 40.6488299369812,145.66889625787735 "/>
+  <text id="svg_21" fill="#2d0470" font-weight="bold" font-size="7.5" font-family="Arial, sans-serif" y="151.82943" x="46.80268">Preuve validée · Paiement déclenché</text>
+  <rect stroke="#c49ef5" id="svg_22" fill="#ffffff" rx="8" height="22" width="122.90302" y="164" x="24"/>
+  <circle id="svg_23" fill="#E24B4A" r="8" cy="175" cx="36.81605"/>
+  <line id="svg_24" stroke-linecap="round" stroke-width="1.8" stroke="#ffffff" y2="178.35524" x2="40.97288" y1="172.35524" x1="32.97288"/>
+  <line id="svg_25" stroke-linecap="round" stroke-width="1.8" stroke="#ffffff" y2="178.15683" x2="32.97288" y1="172.15683" x1="40.97288"/>
+  <text id="svg_26" fill="#A32D2D" font-size="7.5" font-family="Arial, sans-serif" y="177.82943" x="47.47157">Preuve rejetée · Aucun débit</text>
+  <polygon id="svg_27" fill="#4c07b" points="95.95986503362656,86 103.95986503362656,90 95.95986503362656,94 "/>
+  <polygon id="svg_28" fill="#4c07b" points="86.26087081432343,85.9999970048666 94.26087081432343,89.9999970048666 86.26087081432343,93.9999970048666 "/>
+ </g>
+</svg>

@@ -1,0 +1,24 @@
+<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg" role="img">
+ <title>Étape 1 — Créer ton compte diffuseur</title>
+
+ <desc>Écran de téléphone avec formulaire d'inscription StatusPay</desc>
+ <g>
+  <title>Layer 1</title>
+  <rect id="svg_1" fill="#efe5fd" rx="16" height="200" width="200"/>
+  <rect id="svg_2" fill="#c49ef5" rx="14" height="158" width="90" y="20" x="55"/>
+  <rect id="svg_3" fill="#efe5fd" rx="6" height="120" width="76" y="32" x="62"/>
+  <rect id="svg_4" fill="#2d0470" rx="3" height="6" width="32" y="22" x="84"/>
+  <rect id="svg_5" fill="#2d0470" rx="3" height="6" width="24" y="160" x="88"/>
+  <rect id="svg_6" fill="#4c07b" rx="6" height="22" width="76" y="32" x="62"/>
+  <text id="svg_7" fill="#efe5fd" font-weight="bold" font-size="9" font-family="Arial, sans-serif" text-anchor="middle" y="47" x="100">StatusPay</text>
+  <text id="svg_8" fill="#2d0470" font-weight="bold" font-size="8" font-family="Arial, sans-serif" text-anchor="middle" y="72" x="100">Créer mon compte</text>
+  <rect id="svg_9" stroke="#c49ef5" fill="#ffffff" rx="3" height="12" width="64" y="78" x="68"/>
+  <text id="svg_10" fill="#a0a0b0" font-size="7" font-family="Arial, sans-serif" y="87" x="73">Prénom et nom...</text>
+  <rect id="svg_11" stroke-width="1.5" stroke="#4c07b" fill="#ffffff" rx="3" height="12" width="64" y="94" x="68"/>
+  <text id="svg_12" fill="#2d0470" font-size="7.5" font-family="Arial, sans-serif" y="102.54023" x="70.70115">+229 97 00 00 00</text>
+  <rect id="svg_13" stroke="#c49ef5" fill="#ffffff" rx="3" height="12" width="64" y="110" x="68"/>
+  <text id="svg_14" fill="#a0a0b0" font-size="7" font-family="Arial, sans-serif" y="118.54023" x="70.47126">Opérateur MoMo...</text>
+  <rect id="svg_15" fill="#4c07b" rx="5" height="16" width="64" y="126" x="68"/>
+  <text id="svg_16" fill="#ffffff" font-weight="bold" font-size="8" font-family="Arial, sans-serif" text-anchor="middle" y="136.81034" x="100.68966">S'inscrire →</text>
+ </g>
+</svg>

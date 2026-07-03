@@ -1,0 +1,32 @@
+<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg" role="img">
+ <title>Étape 1 annonceur — Créer une campagne publicitaire</title>
+
+ <desc>Formulaire de création de campagne avec budget et upload de visuel</desc>
+ <g>
+  <title>Layer 1</title>
+  <rect id="svg_1" fill="#efe5fd" rx="16" height="200" width="200"/>
+  <rect stroke="#c49ef5" id="svg_2" fill="#ffffff" rx="10" height="177.29368" width="172" y="16" x="14"/>
+  <rect id="svg_3" fill="#4c07b" rx="10" height="24" width="172" y="16" x="14"/>
+  <rect id="svg_4" fill="#4c07b" height="12" width="172" y="28" x="14"/>
+  <circle id="svg_5" fill="#2d0470" r="4" cy="33" cx="30"/>
+  <circle id="svg_6" fill="#7a2fd4" r="4" cy="33" cx="44"/>
+  <circle id="svg_7" fill="#c49ef5" r="4" cy="33" cx="58"/>
+  <text id="svg_8" font-weight="bold" fill="#efe5fd" font-size="8" font-family="Arial, sans-serif" text-anchor="middle" y="37" x="110">Nouvelle campagne</text>
+  <text id="svg_9" fill="#5F5E5A" font-size="7" font-family="Arial, sans-serif" y="60" x="28">Nom de la marque</text>
+  <rect id="svg_10" stroke="#c49ef5" fill="#f5f0ff" rx="4" height="14" width="144" y="64" x="28"/>
+  <text id="svg_11" fill="#2d0470" font-size="7.5" font-family="Arial, sans-serif" y="74" x="34">Moto Express Bénin</text>
+  <text id="svg_12" fill="#5F5E5A" font-size="7" font-family="Arial, sans-serif" y="90" x="28">Budget total (FCFA)</text>
+  <rect id="svg_13" stroke-width="1.5" stroke="#4c07b" fill="#f5f0ff" rx="4" height="14" width="144" y="94" x="28"/>
+  <text id="svg_14" fill="#2d0470" font-weight="bold" font-size="7.5" font-family="Arial, sans-serif" y="104" x="34">50 000 FCFA</text>
+  <rect id="svg_15" stroke-dasharray="4,3" stroke="#7a2fd4" fill="#efe5fd" rx="6" height="44" width="68" y="118" x="28"/>
+  <text id="svg_16" fill="#4c07b" font-size="8" font-family="Arial, sans-serif" text-anchor="middle" y="136" x="62">+</text>
+  <text id="svg_17" fill="#5F5E5A" font-size="6.5" font-family="Arial, sans-serif" text-anchor="middle" y="148" x="62">Ajouter</text>
+  <text id="svg_18" fill="#5F5E5A" font-size="6.5" font-family="Arial, sans-serif" text-anchor="middle" y="157" x="62">visuel</text>
+  <rect id="svg_19" fill="#4c07b" rx="6" height="44" width="68" y="118" x="104"/>
+  <text id="svg_20" font-weight="bold" fill="#efe5fd" font-size="7" font-family="Arial, sans-serif" text-anchor="middle" y="137.46097" x="137.62825">MOTO</text>
+  <text id="svg_21" font-weight="bold" fill="#efe5fd" font-size="7" font-family="Arial, sans-serif" text-anchor="middle" y="150.43495" x="138.37175">EXPRESS</text>
+  <polyline id="svg_23" stroke-linejoin="round" stroke-linecap="round" stroke-width="1.8" stroke="#4c07b" fill="none" points="157,120 160,123 164,116"/>
+  <rect id="svg_24" fill="#4c07b" rx="6" height="18" width="144" y="170" x="28"/>
+  <text id="svg_25" fill="#ffffff" font-weight="bold" font-size="9" font-family="Arial, sans-serif" text-anchor="middle" y="182" x="100">Lancer la campagne →</text>
+ </g>
+</svg>

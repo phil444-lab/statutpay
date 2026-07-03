@@ -1,0 +1,44 @@
+<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg" role="img">
+ <title>Étape 4 annonceur — Tableau de bord résultats en temps réel</title>
+
+ <desc>Dashboard avec statistiques de campagne : diffuseurs, vues estimées, budget consommé</desc>
+ <g>
+  <title>Layer 1</title>
+  <rect id="svg_1" fill="#efe5fd" rx="16" height="200" width="200"/>
+  <rect id="svg_2" stroke="#c49ef5" fill="#ffffff" rx="10" height="168" width="172" y="16" x="14"/>
+  <rect id="svg_3" fill="#4c07b" rx="10" height="24" width="172" y="16" x="14"/>
+  <rect id="svg_4" fill="#4c07b" height="12" width="172" y="28" x="14"/>
+  <text id="svg_5" fill="#ffffff" font-weight="bold" font-size="8" font-family="Arial, sans-serif" text-anchor="middle" y="31.5" x="100">Campagne : Moto Express BJ</text>
+  <rect stroke="null" id="svg_6" fill="#efe5fd" rx="3" height="10" width="119.88434" y="46" x="20"/>
+  <circle id="svg_7" fill="#7a2fd4" r="3" cy="51" cx="26"/>
+  <text id="svg_8" font-weight="bold" fill="#2d0470" font-size="7" font-family="Arial, sans-serif" y="53.27451" x="34.81506">Active · Mise à jour il y a 2 min</text>
+  <rect id="svg_9" fill="#efe5fd" rx="6" height="42" width="50" y="62" x="18"/>
+  <text id="svg_10" fill="#5F5E5A" font-size="7" font-family="Arial, sans-serif" text-anchor="middle" y="78" x="43">Diffuseurs</text>
+  <text id="svg_11" fill="#4c07b" font-weight="bold" font-size="16" font-family="Arial, sans-serif" text-anchor="middle" y="94" x="43">24</text>
+  <rect id="svg_12" fill="#efe5fd" rx="6" height="42" width="50" y="62" x="76"/>
+  <text id="svg_13" fill="#5F5E5A" font-size="7" font-family="Arial, sans-serif" text-anchor="middle" y="78" x="101">Vues est.</text>
+  <text id="svg_14" fill="#4c07b" font-weight="bold" font-size="14" font-family="Arial, sans-serif" text-anchor="middle" y="94" x="101">1 200</text>
+  <rect id="svg_15" fill="#efe5fd" rx="6" height="42" width="50" y="62" x="134"/>
+  <text id="svg_16" fill="#5F5E5A" font-size="7" font-family="Arial, sans-serif" text-anchor="middle" y="78" x="159">Budget</text>
+  <text id="svg_17" fill="#2d0470" font-weight="bold" font-size="16" font-family="Arial, sans-serif" text-anchor="middle" y="94" x="159">67%</text>
+  <text id="svg_18" fill="#5F5E5A" font-size="7" font-family="Arial, sans-serif" y="118" x="20">Progression du budget</text>
+  <rect id="svg_19" fill="#efe5fd" rx="5" height="10" width="164" y="122" x="18"/>
+  <rect id="svg_20" fill="#4c07b" rx="5" height="10" width="110" y="122" x="18"/>
+  <text id="svg_21" fill="#5F5E5A" font-size="7" font-family="Arial, sans-serif" text-anchor="end" y="129.38188" x="179.85114">50K FCFA</text>
+  <text id="svg_22" fill="#5F5E5A" font-size="7" font-family="Arial, sans-serif" y="148" x="20">Diffusions par jour</text>
+  <rect id="svg_23" fill="#c49ef5" rx="2" height="10" width="14" y="165" x="22"/>
+  <rect id="svg_24" fill="#7a2fd4" rx="2" height="17" width="14" y="158" x="40"/>
+  <rect id="svg_25" fill="#4c07b" rx="2" height="22" width="14" y="153" x="58"/>
+  <rect id="svg_26" fill="#4c07b" rx="2" height="20" width="14" y="155" x="76"/>
+  <rect id="svg_27" fill="#2d0470" rx="2" height="26" width="14" y="149" x="94"/>
+  <rect id="svg_28" fill="#2d0470" rx="2" height="24" width="14" y="151" x="112"/>
+  <text id="svg_29" fill="#888780" font-size="5.5" font-family="Arial, sans-serif" y="180" x="22">L</text>
+  <text id="svg_30" fill="#888780" font-size="5.5" font-family="Arial, sans-serif" y="180" x="40">M</text>
+  <text id="svg_31" fill="#888780" font-size="5.5" font-family="Arial, sans-serif" y="180" x="58">M</text>
+  <text id="svg_32" fill="#888780" font-size="5.5" font-family="Arial, sans-serif" y="180" x="76">J</text>
+  <text id="svg_33" fill="#888780" font-size="5.5" font-family="Arial, sans-serif" y="180" x="94">V</text>
+  <text id="svg_34" fill="#888780" font-size="5.5" font-family="Arial, sans-serif" y="180" x="112">S</text>
+  <rect stroke="#4c07b" id="svg_35" fill="#efe5fd" rx="5" height="18" width="48.53074" y="158" x="133.57282"/>
+  <text id="svg_36" font-weight="bold" fill="#2d0470" font-size="7" font-family="Arial, sans-serif" text-anchor="middle" y="170" x="158">Rapport PDF</text>
+ </g>
+</svg>
