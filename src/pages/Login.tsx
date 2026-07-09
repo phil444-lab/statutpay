@@ -17,9 +17,12 @@ export default function Login() {
 
   const handleGoogleLogin = async (credentialResponse: any) => {
     try {
-      const token = await googleAuthApi(credentialResponse.credential, form.profil || undefined);
-      localStorage.setItem("token", token);
-      navigate("/dashboard");
+      const data = await googleAuthApi(credentialResponse.credential, form.profil || undefined);
+      if (data.mustChangePassword && data.tempPassword) {
+        sessionStorage.setItem("mustChangePassword", "true");
+        sessionStorage.setItem("tempPassword", data.tempPassword);
+      }
+      navigate(data.role === "annonceur" ? "/dashboard/annonceur" : "/dashboard/diffuseur");
     } catch (e: any) { setError(e.message); }
   };
 
@@ -28,9 +31,8 @@ export default function Login() {
     setError("");
     setLoading(true);
     try {
-      const token = await loginApi(form.email, form.password, form.profil);
-      localStorage.setItem("token", token);
-      navigate("/dashboard");
+      const data = await loginApi(form.email, form.password, form.profil);
+      navigate(data.role === "annonceur" ? "/dashboard/annonceur" : "/dashboard/diffuseur");
     } catch (e: any) {
       setError(e.message);
     } finally {
@@ -102,9 +104,9 @@ export default function Login() {
             </div>
 
             <div className="flex justify-end">
-              <a href="#" className="font-playfair italic text-sm text-[#4c075b] hover:underline">
+              <Link to="/forgot-password" className="font-playfair italic text-sm text-[#4c075b] hover:underline">
                 Mot de passe oublié ?
-              </a>
+              </Link>
             </div>
 
             <button

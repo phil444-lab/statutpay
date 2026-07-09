@@ -51,8 +51,11 @@ export default function Register() {
 
   const googleRegister = async (credentialResponse: any) => {
     try {
-      const token = await googleAuthApi(credentialResponse.credential, role);
-      localStorage.setItem("token", token);
+      const data = await googleAuthApi(credentialResponse.credential, role);
+      if (data.mustChangePassword && data.tempPassword) {
+        sessionStorage.setItem("mustChangePassword", "true");
+        sessionStorage.setItem("tempPassword", data.tempPassword);
+      }
       navigate("/dashboard");
     } catch (e: any) { setError(e.message); }
   };
@@ -84,8 +87,7 @@ export default function Register() {
         if (annonceur.pieceIdentite) fd.append("pieceIdentite", annonceur.pieceIdentite);
       }
       fd.append("role", role);
-      const token = await registerApi(fd);
-      localStorage.setItem("token", token);
+      await registerApi(fd);
       navigate("/dashboard");
     } catch (e: any) {
       setError(e.message);
