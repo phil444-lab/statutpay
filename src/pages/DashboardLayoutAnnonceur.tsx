@@ -1,0 +1,45 @@
+import { Outlet, useLocation } from "react-router";
+import { LayoutDashboard, Megaphone, BarChart2, Wallet, Settings } from "lucide-react";
+import Sidebar from "../app/components/Sidebar";
+import type { SidebarItem } from "../app/components/Sidebar";
+import DashboardNavbar from "../app/components/DashboardNavbar";
+import PageTransition from "../app/components/PageTransition";
+import { UserProvider } from "../app/components/UserContext";
+
+const annonceurItems: SidebarItem[] = [
+  { label: "Tableau de bord", icon: <LayoutDashboard size={18} />, path: "/dashboard/annonceur" },
+  { label: "Campagnes",       icon: <Megaphone size={18} />,       path: "/dashboard/annonceur/campagnes" },
+  { label: "Rapports & Analyses", icon: <BarChart2 size={18} />,   path: "/dashboard/annonceur/rapports" },
+  { label: "Portefeuille",    icon: <Wallet size={18} />,          path: "/dashboard/annonceur/portefeuille" },
+  { label: "Paramètres",      icon: <Settings size={18} />,        path: "/dashboard/annonceur/parametres" },
+];
+
+const titles: Record<string, string> = {
+  "/dashboard/annonceur":             "Tableau de bord",
+  "/dashboard/annonceur/campagnes":   "Campagnes",
+  "/dashboard/annonceur/campagnes/create": "Nouvelle Campagne",
+  "/dashboard/annonceur/rapports":    "Rapports & Analyses",
+  "/dashboard/annonceur/portefeuille":"Portefeuille",
+  "/dashboard/annonceur/parametres":  "Paramètres",
+};
+
+export default function DashboardLayoutAnnonceur() {
+  const { pathname } = useLocation();
+  const title = titles[pathname] ?? "Dashboard";
+
+  return (
+    <UserProvider>
+      <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
+        <Sidebar items={annonceurItems} role="Annonceur" />
+        <div className="flex-1 flex flex-col min-w-0">
+          <DashboardNavbar title={title} />
+          <main className="flex-1 w-full px-4 md:px-8 py-8 max-w-5xl mx-auto">
+            <PageTransition>
+              <Outlet />
+            </PageTransition>
+          </main>
+        </div>
+      </div>
+    </UserProvider>
+  );
+}
