@@ -30,10 +30,18 @@ interface PhoneInputProps {
   required?: boolean;
 }
 
+function parsePhone(value: string | null | undefined) {
+  const v = value ?? "";
+  const country = COUNTRIES.find((c) => v.startsWith(c.code));
+  if (country) return { country, number: v.slice(country.code.length) };
+  return { country: COUNTRIES[0], number: v };
+}
+
 export default function PhoneInput({ value, onChange, required }: PhoneInputProps) {
-  const [selected, setSelected] = useState(COUNTRIES[0]);
+  const parsed = parsePhone(value);
+  const [selected, setSelected] = useState(parsed.country);
   const [open, setOpen] = useState(false);
-  const [number, setNumber] = useState("");
+  const [number, setNumber] = useState(parsed.number);
 
   const handleCountryChange = (c: typeof COUNTRIES[0]) => {
     setSelected(c);

@@ -58,7 +58,11 @@ export default function Login() {
           </h1>
           <p className="text-gray-500 text-xs sm:text-sm mb-5">Connecte-toi à ton compte StatutPay.</p>
 
-          {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-600 text-sm text-center font-medium px-4 py-3 rounded-xl mb-4">
+              {error}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div>
