@@ -21,6 +21,7 @@ model User {
   resetToken        String?   @unique
   resetTokenExpires DateTime?
   createdAt         DateTime  @default(now())
+  deletedAt         DateTime?
 }
 
 enum Role {

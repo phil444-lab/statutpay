@@ -74,7 +74,7 @@ router.post("/login", async (req: Request, res: Response) => {
   const { email, password, role } = req.body;
 
   const user = await prisma.user.findUnique({ where: { email } });
-  if (!user || !user.password)
+  if (!user || !user.password || user.deletedAt)
     return res.status(401).json({ message: "Identifiants incorrects" });
 
   if (user.role !== role)
@@ -102,6 +102,11 @@ router.post("/google", async (req: Request, res: Response) => {
   if (!payload?.email) return res.status(400).json({ message: "Token Google invalide" });
 
   let user = await prisma.user.findUnique({ where: { email: payload.email } });
+
+  // Si le compte a été supprimé, refuser la connexion
+  if (user?.deletedAt) {
+    return res.status(401).json({ message: "Ce compte a été supprimé." });
+  }
 
   if (!user) {
     if (!role) return res.status(400).json({ message: "Rôle requis pour l'inscription" });
@@ -134,8 +139,95 @@ router.get("/me", async (req: Request, res: Response) => {
   if (!token) return res.status(401).json({ message: "Non authentifié" });
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: number; role: string };
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId },
+      select: { nom: true, prenoms: true, role: true, email: true, telephone: true, nomEntreprise: true, pieceIdentitePath: true, googleId: true, deletedAt: true },
+    });
+    if (!user || user.deletedAt) return res.status(401).json({ message: "Utilisateur introuvable" });
     setAuthCookie(res, decoded.userId, decoded.role);
-    return res.json(decoded);
+    return res.json(user);
+  } catch {
+    return res.status(401).json({ message: "Session expirée" });
+  }
+});
+
+// Mise à jour du profil (avec upload de pièce d'identité)
+router.put("/me", upload.single("pieceIdentite"), async (req: Request, res: Response) => {
+  const token = req.cookies?.token;
+  if (!token) return res.status(401).json({ message: "Non authentifié" });
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: number; role: string };
+    const { nom, prenoms, email, telephone, nomEntreprise } = req.body;
+
+    if (email && !EMAIL_REGEX.test(email))
+      return res.status(400).json({ message: "Adresse email invalide" });
+
+    if (email) {
+      const existing = await prisma.user.findFirst({ where: { email, NOT: { id: decoded.userId } } });
+      if (existing) return res.status(409).json({ message: "Email déjà utilisé" });
+    }
+
+    const data: any = {};
+    if (nom) data.nom = nom;
+    if (prenoms) data.prenoms = prenoms;
+    if (email) data.email = email;
+    if (telephone !== undefined) data.telephone = telephone;
+    if (nomEntreprise !== undefined) data.nomEntreprise = nomEntreprise;
+    if (req.file) data.pieceIdentitePath = req.file.path;
+
+    const updated = await prisma.user.update({
+      where: { id: decoded.userId },
+      data,
+      select: { nom: true, prenoms: true, email: true, telephone: true, nomEntreprise: true, pieceIdentitePath: true, role: true },
+    });
+    return res.json(updated);
+  } catch {
+    return res.status(401).json({ message: "Session expirée" });
+  }
+});
+
+// Changement de mot de passe
+router.put("/me/password", async (req: Request, res: Response) => {
+  const token = req.cookies?.token;
+  if (!token) return res.status(401).json({ message: "Non authentifié" });
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: number };
+    const { currentPassword, newPassword } = req.body;
+
+    const user = await prisma.user.findUnique({ where: { id: decoded.userId } });
+    if (!user) return res.status(404).json({ message: "Utilisateur introuvable" });
+
+    // Si l'utilisateur n'a pas de googleId (inscription classique), vérifier l'ancien mot de passe
+    if (!user.googleId) {
+      if (!currentPassword) return res.status(400).json({ message: "Mot de passe actuel requis" });
+      const valid = await bcrypt.compare(currentPassword, user.password!);
+      if (!valid) return res.status(401).json({ message: "Mot de passe actuel incorrect" });
+    }
+    // Si l'utilisateur a un googleId (connexion Google), on permet d'en définir un sans vérification
+
+    if (!PASSWORD_REGEX.test(newPassword))
+      return res.status(400).json({ message: "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial." });
+
+    const hashed = await bcrypt.hash(newPassword, 10);
+    await prisma.user.update({ where: { id: decoded.userId }, data: { password: hashed } });
+    return res.json({ message: "Mot de passe modifié avec succès" });
+  } catch {
+    return res.status(401).json({ message: "Session expirée" });
+  }
+});
+
+// Suppression de compte (soft delete)
+router.delete("/me", async (req: Request, res: Response) => {
+  const token = req.cookies?.token;
+  if (!token) return res.status(401).json({ message: "Non authentifié" });
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: number };
+    await prisma.user.update({
+      where: { id: decoded.userId },
+      data: { deletedAt: new Date() },
+    });
+    res.clearCookie("token", COOKIE_OPTIONS);
+    return res.json({ message: "Compte supprimé avec succès." });
   } catch {
     return res.status(401).json({ message: "Session expirée" });
   }
