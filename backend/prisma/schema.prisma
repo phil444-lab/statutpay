@@ -8,23 +8,139 @@ datasource db {
 }
 
 model User {
-  id               Int        @id @default(autoincrement())
-  email            String     @unique
-  password         String?
-  nom              String
-  prenoms          String
-  telephone        String?
-  nomEntreprise    String?
+  id                Int        @id @default(autoincrement())
+  email             String     @unique
+  password          String?
+  nom               String
+  prenoms           String
+  telephone         String?
+  nomEntreprise     String?
   pieceIdentitePath String?
-  role             Role
-  googleId          String?   @unique
-  resetToken        String?   @unique
+  role              Role
+  googleId          String?    @unique
+  resetToken        String?    @unique
   resetTokenExpires DateTime?
-  createdAt         DateTime  @default(now())
+  createdAt         DateTime   @default(now())
   deletedAt         DateTime?
+  campagnes         Campagne[]
 }
 
 enum Role {
   annonceur
   diffuseur
+}
+
+model Pays {
+  id        Int        @id @default(autoincrement())
+  code      String     @unique
+  label     String
+  localites Localite[]
+  campagnes Campagne[]
+}
+
+model Localite {
+  id        Int                @id @default(autoincrement())
+  label     String
+  pays      Pays               @relation(fields: [paysId], references: [id])
+  paysId    Int
+  campagnes CampagneLocalite[]
+}
+
+model Profession {
+  id        Int                  @id @default(autoincrement())
+  label     String
+  campagnes CampagneProfession[]
+}
+
+model CategorieCiblage {
+  id        Int                        @id @default(autoincrement())
+  label     String
+  campagnes CampagneCategorieCiblage[]
+}
+
+model TypeMedia {
+  id        Int        @id @default(autoincrement())
+  code      String     @unique
+  label     String
+  campagnes Campagne[]
+}
+
+model CategorieCampagne {
+  id        Int        @id @default(autoincrement())
+  code      String     @unique
+  label     String
+  campagnes Campagne[]
+}
+
+model Campagne {
+  id                Int                        @id @default(autoincrement())
+  nom               String
+  description       String?                    @db.Text
+  dateDebut         DateTime
+  dateFin           DateTime
+  heureDiffusion    String
+  budget            Float
+  montantParVue     Float                      @default(2.5)
+  ageMin            Int                        @default(18)
+  ageMax            Int                        @default(99)
+  legende           String?                    @db.Text
+  statut            StatutCampagne             @default(en_attente)
+  annonceur         User                       @relation(fields: [annonceurId], references: [id])
+  annonceurId       Int
+  pays              Pays?                      @relation(fields: [paysId], references: [id])
+  paysId            Int?
+  typeMedia         TypeMedia?                 @relation(fields: [typeMediaId], references: [id])
+  typeMediaId       Int?
+  categorie         CategorieCampagne?         @relation(fields: [categorieId], references: [id])
+  categorieId       Int?
+  localites         CampagneLocalite[]
+  professions       CampagneProfession[]
+  categoriesCiblage CampagneCategorieCiblage[]
+  medias            CampagneMedia[]
+  createdAt         DateTime                   @default(now())
+  updatedAt         DateTime                   @updatedAt
+  deletedAt         DateTime?
+}
+
+enum StatutCampagne {
+  en_attente
+  actif
+  cloture
+  rejete
+}
+
+model CampagneLocalite {
+  campagne   Campagne @relation(fields: [campagneId], references: [id])
+  campagneId Int
+  localite   Localite @relation(fields: [localiteId], references: [id])
+  localiteId Int
+
+  @@id([campagneId, localiteId])
+}
+
+model CampagneProfession {
+  campagne     Campagne   @relation(fields: [campagneId], references: [id])
+  campagneId   Int
+  profession   Profession @relation(fields: [professionId], references: [id])
+  professionId Int
+
+  @@id([campagneId, professionId])
+}
+
+model CampagneCategorieCiblage {
+  campagne           Campagne         @relation(fields: [campagneId], references: [id])
+  campagneId         Int
+  categorieCiblage   CategorieCiblage @relation(fields: [categorieCiblageId], references: [id])
+  categorieCiblageId Int
+
+  @@id([campagneId, categorieCiblageId])
+}
+
+model CampagneMedia {
+  id         Int      @id @default(autoincrement())
+  campagne   Campagne @relation(fields: [campagneId], references: [id])
+  campagneId Int
+  path       String
+  mimetype   String
+  createdAt  DateTime @default(now())
 }

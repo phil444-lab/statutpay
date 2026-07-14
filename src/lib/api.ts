@@ -1,4 +1,4 @@
-const BASE = "http://localhost:3000/api";
+const BASE = `${import.meta.env.VITE_API_BASE_URL}/api`;
 
 const opts = (method: string, body?: object): RequestInit => ({
   method,
@@ -97,4 +97,102 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}) {
     throw new Error("Session expirée");
   }
   return res;
+}
+
+// ─── Référentiels ────────────────────────────────────────────────────────────
+
+export interface Pays {
+  id: number; code: string; label: string;
+  localites: { id: number; label: string; paysId: number }[];
+}
+export interface Profession { id: number; label: string; }
+export interface CategorieCiblage { id: number; label: string; }
+export interface TypeMedia { id: number; code: string; label: string; }
+export interface CategorieCampagne { id: number; code: string; label: string; }
+
+export interface Referentiels {
+  pays: Pays[];
+  professions: Profession[];
+  categoriesCiblage: CategorieCiblage[];
+  typesMedia: TypeMedia[];
+  categoriesCampagne: CategorieCampagne[];
+}
+
+export async function getReferentielsApi(): Promise<Referentiels> {
+  const res = await fetchWithAuth("/referentiels");
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message);
+  return data;
+}
+
+// ─── Campagnes ───────────────────────────────────────────────────────────────
+
+export interface Campagne {
+  id: number;
+  nom: string;
+  budget: number;
+  dateDebut: string;
+  dateFin: string;
+  statut: "en_attente" | "actif" | "cloture" | "rejete";
+  categorie: CategorieCampagne | null;
+  typeMedia: TypeMedia | null;
+  pays: Pays | null;
+  medias: { id: number; path: string; mimetype: string }[];
+  createdAt: string;
+}
+
+export interface CampagneFilters {
+  statut?: string;
+  categorieId?: number;
+  dateDebut?: string;
+  dateFin?: string;
+  search?: string;
+}
+
+export async function getCampagnesApi(filters?: CampagneFilters): Promise<Campagne[]> {
+  const params = new URLSearchParams();
+  if (filters?.statut) params.set("statut", filters.statut);
+  if (filters?.categorieId) params.set("categorieId", String(filters.categorieId));
+  if (filters?.dateDebut) params.set("dateDebut", filters.dateDebut);
+  if (filters?.dateFin) params.set("dateFin", filters.dateFin);
+  if (filters?.search) params.set("search", filters.search);
+  const res = await fetchWithAuth(`/campagnes?${params.toString()}`);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message);
+  return data;
+}
+
+export async function getCampagneApi(id: number): Promise<Campagne> {
+  const res = await fetchWithAuth(`/campagnes/${id}`);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message);
+  return data;
+}
+
+export async function createCampagneApi(formData: FormData): Promise<Campagne> {
+  const res = await fetch(`${BASE}/campagnes`, {
+    method: "POST",
+    credentials: "include",
+    body: formData,
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message);
+  return data;
+}
+
+export async function updateCampagneApi(id: number, formData: FormData): Promise<Campagne> {
+  const res = await fetch(`${BASE}/campagnes/${id}`, {
+    method: "PUT",
+    credentials: "include",
+    body: formData,
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message);
+  return data;
+}
+
+export async function deleteCampagneApi(id: number): Promise<void> {
+  const res = await fetchWithAuth(`/campagnes/${id}`, { method: "DELETE" });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message);
 }

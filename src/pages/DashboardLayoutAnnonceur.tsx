@@ -5,6 +5,7 @@ import type { SidebarItem } from "../app/components/Sidebar";
 import DashboardNavbar from "../app/components/DashboardNavbar";
 import PageTransition from "../app/components/PageTransition";
 import { UserProvider } from "../app/components/UserContext";
+import { Toaster } from "../app/components/ui/sonner";
 
 const annonceurItems: SidebarItem[] = [
   { label: "Tableau de bord", icon: <LayoutDashboard size={18} />, path: "/dashboard/annonceur" },
@@ -25,7 +26,9 @@ const titles: Record<string, string> = {
 
 export default function DashboardLayoutAnnonceur() {
   const { pathname } = useLocation();
-  const title = titles[pathname] ?? "Dashboard";
+  const title = titles[pathname] ??
+    (/^\/dashboard\/annonceur\/campagnes\/\d+$/.test(pathname) ? "Détail de la campagne" :
+    /^\/dashboard\/annonceur\/campagnes\/\d+\/edit$/.test(pathname) ? "Modification Campagne" : "Dashboard");
 
   return (
     <UserProvider>
@@ -38,6 +41,7 @@ export default function DashboardLayoutAnnonceur() {
               <Outlet />
             </PageTransition>
           </main>
+          <Toaster position="top-right" richColors />
         </div>
       </div>
     </UserProvider>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { Megaphone, Users, BarChart3, Wallet, Eye, Target, TrendingUp, DollarSign, PlusCircle, History, Copy, Check, X, ArrowUpRight, Clock, CheckCircle, XCircle, Filter } from "lucide-react";
+import { Megaphone, Wallet, Eye, Target, TrendingUp, DollarSign, PlusCircle, History, Copy, Check, X, ArrowUpRight, Clock, CheckCircle, XCircle } from "lucide-react";
 
 type Period = "today" | "7d" | "30d" | "90d";
 type CampaignStatus = "actif" | "en_attente" | "cloture" | "rejete";
@@ -63,17 +63,6 @@ function StatutBadge({ statut }: { statut: CampaignStatus }) {
   );
 }
 
-function MiniChart({ data, color }: { data: number[]; color: string }) {
-  const max = Math.max(...data, 1);
-  const h = 40;
-  const w = 120;
-  const pts = data.map((v, i) => `${(i / (data.length - 1)) * w},${h - (v / max) * h}`).join(" ");
-  return (
-    <svg width={w} height={h} className="flex-shrink-0">
-      <polyline points={pts} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
 
 export default function DashboardAnnonceur() {
   const navigate = useNavigate();

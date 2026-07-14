@@ -8,6 +8,7 @@ import DashboardLayoutAnnonceur from "./pages/DashboardLayoutAnnonceur.tsx";
 import DashboardAnnonceur from "./pages/DashboardAnnonceur.tsx";
 import Campagnes from "./pages/annonceur/Campagnes.tsx";
 import CreerCampagne from "./pages/annonceur/CreerCampagne.tsx";
+import DetCampagne from "./pages/annonceur/DetCampagne.tsx";
 import Rapports from "./pages/annonceur/Rapports.tsx";
 import Portefeuille from "./pages/annonceur/Portefeuille.tsx";
 import ParametresAnnonceur from "./pages/annonceur/Parametres.tsx";
@@ -36,7 +37,9 @@ createRoot(document.getElementById("root")!).render(
       >
         <Route index element={<DashboardAnnonceur />} />
         <Route path="campagnes"        element={<Campagnes />} />
-        <Route path="campagnes/create" element={<CreerCampagne />} />
+        <Route path="campagnes/create"   element={<CreerCampagne />} />
+        <Route path="campagnes/:id/edit"  element={<CreerCampagne />} />
+        <Route path="campagnes/:id"       element={<DetCampagne />} />
         <Route path="rapports"     element={<Rapports />} />
         <Route path="portefeuille" element={<Portefeuille />} />
         <Route path="parametres"   element={<ParametresAnnonceur />} />
