@@ -51,7 +51,8 @@ export default function PhoneInput({ value, onChange, required }: PhoneInputProp
 
   const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNumber(e.target.value);
-    onChange(`${selected.code}${e.target.value}`);
+    // Si l'utilisateur efface tout après l'indicatif, on sauvegarde une chaîne vide
+    onChange(e.target.value.trim() ? `${selected.code}${e.target.value}` : "");
   };
 
   return (

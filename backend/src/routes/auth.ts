@@ -209,11 +209,22 @@ router.put("/me", upload.single("pieceIdentite"), async (req: Request, res: Resp
       if (existing) return res.status(409).json({ message: "Email déjà utilisé" });
     }
 
+    // Fonction pour vérifier si le téléphone n'est qu'un indicatif seul (ex: "+229" sans chiffres)
+    function estTelephoneValide(tel: string): boolean {
+      if (!tel || tel.trim() === "") return false;
+      // Extraire la partie numérique (sans le + et l'indicatif)
+      const sansIndicatif = tel.replace(/^\+\d{1,4}/, "").trim();
+      return sansIndicatif.length > 0;
+    }
+
     const data: any = {};
     if (nom) data.nom = nom;
     if (prenoms) data.prenoms = prenoms;
     if (email) data.email = email;
-    if (telephone !== undefined) data.telephone = telephone;
+    if (telephone !== undefined) {
+      // Ne sauvegarder le téléphone que s'il est valide (pas seulement un indicatif)
+      data.telephone = estTelephoneValide(telephone) ? telephone : null;
+    }
     if (nomEntreprise !== undefined) data.nomEntreprise = nomEntreprise;
     if (req.file) data.pieceIdentitePath = req.file.path;
 
