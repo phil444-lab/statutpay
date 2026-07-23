@@ -211,7 +211,24 @@ export default function Register() {
                 )}
               </div>
 
-              <button type="submit" disabled={loading}
+              {/* CGU */}
+              <div className="flex items-start gap-2 mt-2">
+                <input
+                  type="checkbox"
+                  id="cgu-diffuseur"
+                  checked={cguAccepted}
+                  onChange={(e) => setCguAccepted(e.target.checked)}
+                  className="mt-0.5 accent-[#4c075b] cursor-pointer"
+                />
+                <label htmlFor="cgu-diffuseur" className="text-sm text-gray-600 cursor-pointer">
+                  J'ai lu et j'accepte les{" "}
+                  <a href="/cgu" target="_blank" rel="noopener noreferrer" className="text-[#4c075b] font-semibold hover:underline">
+                    Conditions générales
+                  </a>.
+                </label>
+              </div>
+
+              <button type="submit" disabled={loading || !cguAccepted}
                 className="w-full py-3 rounded-lg bg-[#4c075b] text-white font-semibold text-sm hover:-translate-y-0.5 transition-all duration-150 disabled:opacity-60 mt-2">
                 {loading ? "Création..." : "Créer mon compte"}
               </button>
@@ -294,6 +311,23 @@ export default function Register() {
                 )}
               </div>
 
+              {/* CGU */}
+              <div className="flex items-start gap-2 mt-2">
+                <input
+                  type="checkbox"
+                  id="cgu-annonceur"
+                  checked={cguAccepted}
+                  onChange={(e) => setCguAccepted(e.target.checked)}
+                  className="mt-0.5 accent-[#4c075b] cursor-pointer"
+                />
+                <label htmlFor="cgu-annonceur" className="text-sm text-gray-600 cursor-pointer">
+                  J'ai lu et j'accepte les{" "}
+                  <a href="/cgu" target="_blank" rel="noopener noreferrer" className="text-[#4c075b] font-semibold hover:underline">
+                    Conditions générales
+                  </a>.
+                </label>
+              </div>
+
               <button type="submit" disabled={loading || !cguAccepted}
                 className="w-full py-3 rounded-lg bg-[#4c075b] text-white font-semibold text-sm hover:-translate-y-0.5 transition-all duration-150 disabled:opacity-60 mt-2">
                 {loading ? "Création..." : "Créer mon compte"}
@@ -301,29 +335,13 @@ export default function Register() {
             </form>
           )}
 
-          {/* CGU + Google — visibles si un rôle est sélectionné */}
+          {/* Google — visible si un rôle est sélectionné */}
           {role && (
             <>
               <div className="flex items-center gap-3 my-4">
                 <div className="flex-1 h-px bg-gray-200" />
                 <span className="text-xs text-gray-400">ou</span>
                 <div className="flex-1 h-px bg-gray-200" />
-              </div>
-
-              <div className="flex items-start gap-2 mb-3">
-                <input
-                  type="checkbox"
-                  id="cgu"
-                  checked={cguAccepted}
-                  onChange={(e) => setCguAccepted(e.target.checked)}
-                  className="mt-0.5 accent-[#4c075b] cursor-pointer"
-                />
-                <label htmlFor="cgu" className="text-sm text-gray-600 cursor-pointer">
-                  J'ai lu et j'accepte les{" "}
-                  <a href="/cgu" target="_blank" rel="noopener noreferrer" className="text-[#4c075b] font-semibold hover:underline">
-                    Conditions générales
-                  </a>.
-                </label>
               </div>
 
               <div className={`transition-opacity ${!cguAccepted ? "opacity-40 pointer-events-none" : ""}`}>
