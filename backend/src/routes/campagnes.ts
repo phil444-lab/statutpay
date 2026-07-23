@@ -350,86 +350,183 @@ function getCampaignDebitEmailHtml(montant: number, campagneNom: string, referen
   });
 
   return `
-    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
-      
-      <!-- Header avec logo -->
-      <div style="background: linear-gradient(135deg, #4c075b 0%, #6b1d7a 100%); padding: 40px 20px; text-align: center;">
-        <img src="cid:logo" alt="StatutPay Logo" style="max-width: 180px; height: auto; display: block; margin: 0 auto;" />
-        <h1 style="color: #ffffff; font-size: 28px; margin-top: 20px; font-weight: 600;">Campagne débitée 📊</h1>
-      </div>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Confirmation de décaissement - StatutPay</title>
+</head>
+<body style="margin:0; padding:0; background-color:#eef0f3; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
 
-      <!-- Corps de l'email -->
-      <div style="padding: 40px 30px;">
-        <p style="color: #333333; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
-          Bonjour,
-        </p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#eef0f3; padding: 30px 0;">
+  <tr>
+    <td align="center">
 
-        <p style="color: #555555; font-size: 15px; line-height: 1.7; margin-bottom: 20px;">
-          Le budget de votre campagne a été débité de votre portefeuille <strong>StatutPay</strong>. Votre campagne est maintenant active !
-        </p>
+      <table role="presentation" width="640" cellpadding="0" cellspacing="0" style="background-color:#ffffff; border-radius:10px; overflow:hidden; box-shadow:0 4px 16px rgba(0,0,0,0.08);">
 
-        <!-- Carte de confirmation -->
-        <div style="background: linear-gradient(135deg, #f8f4fa 0%, #f0e8f5 100%); border-left: 4px solid #ffc107; padding: 25px; margin: 30px 0; border-radius: 8px;">
-          <h2 style="color: #4c075b; font-size: 18px; margin-top: 0; margin-bottom: 20px;">
-            📢 Récapitulatif du décaissement
-          </h2>
-          
-          <div style="background-color: #ffffff; padding: 20px; border-radius: 8px; margin-bottom: 15px;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e9ecef;">
-              <span style="color: #666666; font-size: 14px;">Campagne</span>
-              <span style="color: #4c075b; font-size: 14px; font-weight: 600; text-align: right; max-width: 60%;">${campagneNom}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e9ecef;">
-              <span style="color: #666666; font-size: 14px;">Montant débité</span>
-              <span style="color: #ffc107; font-size: 16px; font-weight: bold; text-shadow: 0 0 1px rgba(0,0,0,0.1);">- ${montant.toLocaleString('fr-FR')} F</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e9ecef;">
-              <span style="color: #666666; font-size: 14px;">Référence</span>
-              <span style="color: #4c075b; font-size: 13px; font-weight: 600;">${reference}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e9ecef;">
-              <span style="color: #666666; font-size: 14px;">Date</span>
-              <span style="color: #555555; font-size: 14px;">${date}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between;">
-              <span style="color: #666666; font-size: 14px; font-weight: 600;">Nouveau solde</span>
-              <span style="color: #4c075b; font-size: 16px; font-weight: bold;">${solde.toLocaleString('fr-FR')} F</span>
-            </div>
-          </div>
-        </div>
+        <!-- ============ HEADER ============ -->
+        <tr>
+          <td style="background: linear-gradient(135deg, #4c075b 0%, #6b1d7a 100%); padding: 32px 40px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td valign="middle">
+                  <img src="cid:logo" alt="StatutPay" style="max-width:150px; height:auto; display:block;" />
+                </td>
+                <td valign="middle" align="right">
+                  <p style="color:#ffffff; font-size:13px; letter-spacing:1px; text-transform:uppercase; margin:0 0 4px 0; opacity:0.85;">Décaissement</p>
+                  <p style="color:#ffffff; font-size:18px; font-weight:700; margin:0;">Campagne activée 📊</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
 
-        <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 25px 0; border-radius: 8px;">
-          <p style="color: #856404; font-size: 14px; line-height: 1.6; margin: 0;">
-            <strong>📈 Suivi de campagne :</strong> Vous pouvez suivre les performances de votre campagne en temps réel depuis votre tableau de bord. Les diffuseurs peuvent maintenant voir et accepter votre campagne.
-          </p>
-        </div>
+        <!-- ============ STATUT ============ -->
+        <tr>
+          <td style="padding: 24px 40px 0 40px;">
+            <table role="presentation" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="background-color:#fff3cd; border-radius:20px; padding:6px 16px;">
+                  <span style="color:#856404; font-size:13px; font-weight:700;">&#10003; ACTIVÉE</span>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
 
-        <div style="text-align: center; margin: 35px 0;">
-          <a href="${process.env.FRONTEND_URL}/dashboard/annonceur/campagnes" 
-             style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #4c075b 0%, #6b1d7a 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 15px; box-shadow: 0 4px 12px rgba(76, 7, 91, 0.3);">
-            Voir mes campagnes
-          </a>
-        </div>
+        <!-- ============ INTRO ============ -->
+        <tr>
+          <td style="padding: 20px 40px 0 40px;">
+            <p style="color:#333333; font-size:15px; line-height:1.6; margin:0;">
+              Bonjour,
+            </p>
+            <p style="color:#555555; font-size:15px; line-height:1.7; margin:12px 0 0 0;">
+              Le budget de votre campagne <strong>${campagneNom}</strong> a été débité de votre portefeuille <strong>StatutPay</strong>. Votre campagne est maintenant active et visible par les diffuseurs !
+            </p>
+          </td>
+        </tr>
 
-        <p style="color: #666666; font-size: 14px; line-height: 1.7; margin-top: 30px;">
-          Besoin d'aide ? Contactez notre équipe support à <a href="mailto:contact@statutpay.com" style="color: #4c075b; text-decoration: none; font-weight: 600;">contact@statutpay.com</a>
-        </p>
+        <!-- ============ RÉCAPITULATIF ============ -->
+        <tr>
+          <td style="padding: 24px 40px 0 40px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="border-bottom:2px solid #4c075b; padding:0 0 10px 0;">
+                  <span style="color:#4c075b; font-size:12px; font-weight:700; text-transform:uppercase;">Description</span>
+                </td>
+                <td style="border-bottom:2px solid #4c075b; padding:0 0 10px 0;" align="right">
+                  <span style="color:#4c075b; font-size:12px; font-weight:700; text-transform:uppercase;">Montant</span>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:16px 0; border-bottom:1px solid #f0f0f0;">
+                  <p style="color:#333333; font-size:14px; font-weight:600; margin:0 0 3px 0;">${campagneNom}</p>
+                  <p style="color:#999999; font-size:12px; margin:0;">Décaissement pour campagne publicitaire</p>
+                </td>
+                <td style="padding:16px 0; border-bottom:1px solid #f0f0f0;" align="right" valign="top">
+                  <span style="color:#ffc107; font-size:16px; font-weight:700;">- ${montant.toLocaleString('fr-FR')} F</span>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
 
-        <p style="color: #555555; font-size: 15px; line-height: 1.6; margin-top: 30px; margin-bottom: 10px;">
-          L'équipe StatutPay
-        </p>
-      </div>
+        <!-- ============ DATE / REF ============ -->
+        <tr>
+          <td style="padding: 0 40px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-bottom:1px solid #eeeeee;">
+              <tr>
+                <td style="padding:14px 0;">
+                  <p style="color:#999999; font-size:11px; text-transform:uppercase; margin:0 0 4px 0;">Date</p>
+                  <p style="color:#333333; font-size:14px; font-weight:600; margin:0;">${date}</p>
+                </td>
+                <td style="padding:14px 0;">
+                  <p style="color:#999999; font-size:11px; text-transform:uppercase; margin:0 0 4px 0;">Référence</p>
+                  <p style="color:#333333; font-size:14px; font-weight:600; margin:0;">${reference}</p>
+                </td>
+                <td style="padding:14px 0;" align="right">
+                  <p style="color:#999999; font-size:11px; text-transform:uppercase; margin:0 0 4px 0;">Type</p>
+                  <p style="color:#333333; font-size:14px; font-weight:600; margin:0;">Campagne</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
 
-      <!-- Footer -->
-      <div style="background-color: #f8f9fa; padding: 25px 20px; text-align: center; border-top: 1px solid #e9ecef;">
-        <p style="color: #888888; font-size: 12px; margin: 5px 0;">
-          © 2025 <strong>StatutPay</strong>. Tous droits réservés.
-        </p>
-        <p style="color: #888888; font-size: 12px; margin: 5px 0;">
-          Plateforme de publicité innovante pour annonceurs et diffuseurs
-        </p>
-      </div>
-    </div>
+        <!-- ============ NOUVEAU SOLDE ============ -->
+        <tr>
+          <td style="padding: 24px 40px 0 40px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #f8f4fa 0%, #f0e8f5 100%); border-radius:8px;">
+              <tr>
+                <td style="padding:18px 20px;">
+                  <span style="color:#555555; font-size:13px;">Nouveau solde du portefeuille</span>
+                </td>
+                <td style="padding:18px 20px;" align="right">
+                  <span style="color:#4c075b; font-size:18px; font-weight:700;">${solde.toLocaleString('fr-FR')} F</span>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- ============ INFO SUIVI ============ -->
+        <tr>
+          <td style="padding: 20px 40px 0 40px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#fff3cd; border-radius:8px;">
+              <tr>
+                <td style="padding:14px 18px;">
+                  <p style="color:#856404; font-size:13px; line-height:1.5; margin:0;">
+                    <strong>📈 Suivi de campagne :</strong> Vous pouvez suivre les performances de votre campagne en temps réel depuis votre tableau de bord. Les diffuseurs peuvent maintenant voir et accepter votre campagne.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- ============ CTA ============ -->
+        <tr>
+          <td align="center" style="padding: 32px 40px;">
+            <table role="presentation" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="border-radius:8px; background: linear-gradient(135deg, #4c075b 0%, #6b1d7a 100%);">
+                  <a href="${process.env.FRONTEND_URL}/dashboard/annonceur/campagnes"
+                     style="display:inline-block; padding:14px 36px; color:#ffffff; text-decoration:none; font-weight:700; font-size:14px;">
+                    Voir mes campagnes
+                  </a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- ============ MENTIONS ============ -->
+        <tr>
+          <td style="padding: 0 40px 32px 40px;">
+            <p style="color:#999999; font-size:12px; line-height:1.6; margin:0; text-align:center;">
+              Cet email est généré automatiquement suite à l'activation de votre campagne sur StatutPay.<br/>
+              Besoin d'aide ? <a href="mailto:contact@statutpay.com" style="color:#4c075b; font-weight:600; text-decoration:none;">contact@statutpay.com</a>
+            </p>
+          </td>
+        </tr>
+
+        <!-- ============ FOOTER ============ -->
+        <tr>
+          <td style="background-color:#f8f9fa; padding:22px 40px; text-align:center; border-top:1px solid #e9ecef;">
+            <p style="color:#888888; font-size:12px; margin:4px 0;">© 2026 <strong>StatutPay</strong>. Tous droits réservés.</p>
+            <p style="color:#888888; font-size:12px; margin:4px 0;">Plateforme de micro-publicité pour annonceurs et diffuseurs</p>
+          </td>
+        </tr>
+
+      </table>
+
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>
   `;
 }
 
