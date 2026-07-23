@@ -2,7 +2,7 @@
 import { useNavigate, useParams } from "react-router";
 import { ArrowLeft, ChevronRight, ChevronLeft, Clock, AlertCircle, Check, Upload, FileText, FolderOpen, ArrowRight } from "lucide-react";
 import * as Select from "@radix-ui/react-select";
-import { getReferentielsApi, createCampagneApi, updateCampagneApi, getCampagneApi, type Referentiels } from "../../lib/api";
+import { getReferentielsApi, createCampagneApi, updateCampagneApi, getCampagneApi, getPortefeuilleApi, type Referentiels } from "../../lib/api";
 import { toast } from "sonner";
 
 type Step = 1 | 2 | 3 | 4;
@@ -98,14 +98,23 @@ export default function CreerCampagne() {
   const [paysOpen, setPaysOpen] = useState(false);
   const [localiteSearch, setLocaliteSearch] = useState("");
   const [professionSearch, setProfessionSearch] = useState("");
+  const [solde, setSolde] = useState<number | null>(null);
 
-  // Charger les référentiels + données campagne si mode édition
+  // Charger les référentiels + données campagne si mode édition + solde
   useEffect(() => {
     const load = async () => {
       try {
         setLoading(true);
         const data = await getReferentielsApi();
         setReferentiels(data);
+
+        // Charger le solde
+        try {
+          const soldeData = await getPortefeuilleApi();
+          setSolde(soldeData.solde);
+        } catch (err) {
+          console.error("Erreur chargement solde:", err);
+        }
 
         if (isEdit) {
           const c = await getCampagneApi(Number(id)) as any;
@@ -213,11 +222,30 @@ export default function CreerCampagne() {
         await createCampagneApi(formData);
       }
       navigate("/dashboard/annonceur/campagnes");
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur lors de la sauvegarde de la campagne");
-    } finally {
-      setSubmitting(false);
-    }
+      } catch (err) {
+        const error = err as any;
+        // Si erreur de solde insuffisant, afficher un message spécial
+        if (error.requiresRecharge) {
+          toast.error(
+            <div className="flex flex-col gap-2">
+              <p className="font-semibold">Solde insuffisant</p>
+              <p>Solde actuel: {error.soldeActuel?.toLocaleString() || 0} F CFA</p>
+              <p>Montant requis: {error.montantRequis?.toLocaleString() || 0} F CFA</p>
+              <button
+                onClick={() => navigate("/dashboard/annonceur/portefeuille")}
+                className="mt-2 px-4 py-2 bg-[#4c075b] text-white rounded-lg text-sm font-medium hover:bg-[#3a0548] transition-colors"
+              >
+                Recharger mon portefeuille
+              </button>
+            </div>,
+            { duration: 10000 }
+          );
+        } else {
+          toast.error(error instanceof Error ? error.message : "Erreur lors de la sauvegarde de la campagne");
+        }
+      } finally {
+        setSubmitting(false);
+      }
   };
 
   const handleNext = () => {
@@ -635,7 +663,21 @@ export default function CreerCampagne() {
                 {form.budget && Number(form.budget) < 10000 ? (
                   <p className="text-xs text-amber-500 mt-1.5">Le budget minimum est de 10 000 F CFA</p>
                 ) : (
-                  <p className="text-xs text-gray-400 mt-1.5">Minimum 10 000 F CFA | Votre solde : <span className="font-semibold text-gray-600">0 F CFA</span></p>
+                  <p className="text-xs text-gray-400 mt-1.5">
+                    Minimum 10 000 F CFA | Votre solde : 
+                    <span className={`font-semibold ${solde !== null && solde < (Number(form.budget) || 0) ? "text-red-600" : "text-gray-600"}`}>
+                      {solde !== null ? `${solde.toLocaleString()} F CFA` : "Chargement..."}
+                    </span>
+                  </p>
+                )}
+                {form.budget && solde !== null && solde < Number(form.budget) && (
+                  <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-xs text-red-600 font-medium flex items-center gap-1.5">
+                      <AlertCircle size={14} className="text-red-600" />
+                      Solde insuffisant pour cette campagne
+                    </p>
+                    <p className="text-xs text-red-500 mt-1">Vous devez recharger votre portefeuille avant de créer cette campagne.</p>
+                  </div>
                 )}
               </div>
             </div>
