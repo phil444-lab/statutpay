@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Link } from "react-router";
 import logo from "../assets/logo.png";
 import PasswordInput from "../app/components/PasswordInput";
@@ -15,7 +15,7 @@ export default function Login() {
   const navigate = useNavigate();
   const [error, setError] = useState("");
 
-  const handleGoogleLogin = async (credentialResponse: any) => {
+  const handleGoogleLogin = useCallback(async (credentialResponse: any) => {
     try {
       const data = await googleAuthApi(credentialResponse.credential, form.profil || undefined);
       if (data.mustChangePassword && data.tempPassword) {
@@ -24,7 +24,7 @@ export default function Login() {
       }
       navigate(data.role === "annonceur" ? "/dashboard/annonceur" : "/dashboard/diffuseur");
     } catch (e: any) { setError(e.message); }
-  };
+  }, [form.profil, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,22 +120,22 @@ export default function Login() {
             >
               {loading ? "Connexion..." : "Se connecter"}
             </button>
-
-            <div className="flex items-center gap-3 my-1">
-              <div className="flex-1 h-px bg-gray-200" />
-              <span className="text-xs text-gray-400">ou</span>
-              <div className="flex-1 h-px bg-gray-200" />
-            </div>
-
-            <div className={`transition-opacity ${!form.profil ? "opacity-40 pointer-events-none" : ""}`}>
-              <GoogleLogin
-                onSuccess={handleGoogleLogin}
-                onError={() => setError("Erreur de connexion Google")}
-                text="signin_with"
-                width={400}
-              />
-            </div>
           </form>
+
+          <div className="flex items-center gap-3 my-4">
+            <div className="flex-1 h-px bg-gray-200" />
+            <span className="text-xs text-gray-400">ou</span>
+            <div className="flex-1 h-px bg-gray-200" />
+          </div>
+
+          <div className={`transition-opacity ${!form.profil ? "opacity-40 pointer-events-none" : ""}`}>
+            <GoogleLogin
+              onSuccess={handleGoogleLogin}
+              onError={() => setError("Erreur de connexion Google")}
+              text="signin_with"
+              width={400}
+            />
+          </div>
 
           <p className="text-center text-sm text-gray-500 mt-6">
             Pas encore de compte ?{" "}

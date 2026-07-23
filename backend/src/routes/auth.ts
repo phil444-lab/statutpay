@@ -171,6 +171,16 @@ router.post("/google", async (req: Request, res: Response) => {
     return res.json({ tempPassword, mustChangePassword: true, role: user.role });
   }
 
+  // L'utilisateur existe déjà
+  // Si un rôle est demandé et qu'il est différent du rôle actuel, on le met à jour
+  // Cela permet à un même compte Google de passer d'annonceur à diffuseur (et vice-versa)
+  if (role && role !== user.role) {
+    user = await prisma.user.update({
+      where: { id: user.id },
+      data: { role: role as any },
+    });
+  }
+
   setAuthCookie(res, user.id, user.role);
   return res.json({ message: "Connexion réussie", role: user.role });
 });
