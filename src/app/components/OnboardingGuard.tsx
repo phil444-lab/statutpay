@@ -2,6 +2,11 @@ import { useUser } from "./UserContext";
 import { AlertTriangle, Phone, IdCard, ArrowRight, CheckCircle2 } from "lucide-react";
 import { useNavigate } from "react-router";
 
+// Vérifie si une valeur est vide (null, undefined, chaîne vide ou espaces)
+function estVide(valeur: string | null | undefined): boolean {
+  return valeur === null || valeur === undefined || valeur.trim() === "";
+}
+
 export default function OnboardingGuard({ children }: { children: React.ReactNode }) {
   const { user } = useUser();
   const navigate = useNavigate();
@@ -9,8 +14,8 @@ export default function OnboardingGuard({ children }: { children: React.ReactNod
   // Si les infos ne sont pas encore chargées, on affiche le contenu normal
   if (!user) return <>{children}</>;
 
-  const manqueTelephone = !user.telephone;
-  const manquePieceIdentite = !user.pieceIdentitePath;
+  const manqueTelephone = estVide(user.telephone);
+  const manquePieceIdentite = estVide(user.pieceIdentitePath);
   const estBloque = manqueTelephone || manquePieceIdentite;
 
   // Si tout est ok, on affiche le contenu normal
