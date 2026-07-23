@@ -5,6 +5,7 @@ import type { SidebarItem } from "../app/components/Sidebar";
 import DashboardNavbar from "../app/components/DashboardNavbar";
 import PageTransition from "../app/components/PageTransition";
 import { UserProvider } from "../app/components/UserContext";
+import OnboardingGuard from "../app/components/OnboardingGuard";
 import { Toaster } from "../app/components/ui/sonner";
 
 const annonceurItems: SidebarItem[] = [
@@ -30,6 +31,9 @@ export default function DashboardLayoutAnnonceur() {
     (/^\/dashboard\/annonceur\/campagnes\/\d+$/.test(pathname) ? "Détail de la campagne" :
     /^\/dashboard\/annonceur\/campagnes\/\d+\/edit$/.test(pathname) ? "Modification Campagne" : "Dashboard");
 
+  // La page paramètres ne doit PAS être bloquée pour permettre à l'utilisateur de compléter son profil
+  const isParametresPage = pathname === "/dashboard/annonceur/parametres";
+
   return (
     <UserProvider>
       <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
@@ -38,7 +42,7 @@ export default function DashboardLayoutAnnonceur() {
           <DashboardNavbar title={title} />
           <main className="flex-1 w-full px-4 md:px-8 py-8 max-w-5xl mx-auto">
             <PageTransition>
-              <Outlet />
+              {isParametresPage ? <Outlet /> : <OnboardingGuard><Outlet /></OnboardingGuard>}
             </PageTransition>
           </main>
           <Toaster position="top-right" richColors />
