@@ -289,7 +289,16 @@ export default function Campagnes() {
                         <button onClick={() => navigate(`/dashboard/annonceur/campagnes/${c.id}`)} className="p-1.5 rounded-lg text-gray-400 hover:text-[#4c075b] hover:bg-[#f9f0fb] transition-colors" title="Voir">
                           <Eye size={18} />
                         </button>
-                        <button onClick={() => navigate(`/dashboard/annonceur/campagnes/${c.id}/edit`)} className="p-1.5 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors" title="Modifier">
+                        <button
+                          onClick={() => c.statut !== "cloture" && navigate(`/dashboard/annonceur/campagnes/${c.id}/edit`)}
+                          disabled={c.statut === "cloture"}
+                          className={`p-1.5 rounded-lg transition-colors ${
+                            c.statut === "cloture"
+                              ? "text-gray-200 cursor-not-allowed"
+                              : "text-gray-400 hover:text-blue-600 hover:bg-blue-50"
+                          }`}
+                          title={c.statut === "cloture" ? "Modification impossible : campagne clôturée" : "Modifier"}
+                        >
                           <Edit2 size={18} />
                         </button>
                       </div>

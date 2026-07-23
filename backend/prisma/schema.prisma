@@ -23,6 +23,7 @@ model User {
   createdAt         DateTime   @default(now())
   deletedAt         DateTime?
   campagnes         Campagne[]
+  portefeuille      Portefeuille?
 }
 
 enum Role {
@@ -97,6 +98,7 @@ model Campagne {
   professions       CampagneProfession[]
   categoriesCiblage CampagneCategorieCiblage[]
   medias            CampagneMedia[]
+  transactions      Transaction[]
   createdAt         DateTime                   @default(now())
   updatedAt         DateTime                   @updatedAt
   deletedAt         DateTime?
@@ -143,4 +145,31 @@ model CampagneMedia {
   path       String
   mimetype   String
   createdAt  DateTime @default(now())
+}
+
+model Portefeuille {
+  id            Int          @id @default(autoincrement())
+  userId        Int          @unique
+  user          User         @relation(fields: [userId], references: [id])
+  solde         Float        @default(0)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  transactions  Transaction[]
+}
+
+model Transaction {
+  id                Int          @id @default(autoincrement())
+  portefeuille      Portefeuille @relation(fields: [portefeuilleId], references: [id])
+  portefeuilleId    Int
+  type              String       // depot, depense, remboursement, retrait
+  montant           Float
+  fedapayId         Int?                   // ID numérique FedaPay
+  reference         String?      @unique    // référence FedaPay
+  statut            String       @default("en_attente")  // en_attente, reussi, echoue
+  fedapayStatus     String?                 // statut exact FedaPay: pending, approved, transferred, etc.
+  description       String?
+  modePaiement      String?      // mobile_money, card, etc.
+  campagneId        Int?         // ID de la campagne si décaissement
+  campagne          Campagne?    @relation(fields: [campagneId], references: [id])
+  createdAt         DateTime     @default(now())
 }

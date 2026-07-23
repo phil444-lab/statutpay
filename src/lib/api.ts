@@ -196,3 +196,163 @@ export async function deleteCampagneApi(id: number): Promise<void> {
   const data = await res.json();
   if (!res.ok) throw new Error(data.message);
 }
+
+// ─── Portefeuille ────────────────────────────────────────────────────────────
+
+export interface PortefeuilleData {
+  solde: number;
+  depotsMois: number;
+  depensesMois: number;
+  campagnesActives: number;
+  budgetEngage: number;
+  engageActif: number;
+  transactions: TransactionData[];
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export interface TransactionData {
+  id: number;
+  type: string;
+  montant: number;
+  reference: string | null;
+  statut: string;
+  fedapayStatus: string | null;
+  description: string | null;
+  modePaiement: string | null;
+  createdAt: string;
+}
+
+export async function getPortefeuilleApi(page: number = 1, limit: number = 5): Promise<PortefeuilleData> {
+  const res = await fetchWithAuth(`/portefeuille?page=${page}&limit=${limit}`);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message);
+  return data;
+}
+
+export async function getSoldeApi(): Promise<number> {
+  const res = await fetchWithAuth("/portefeuille");
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message);
+  return data.solde;
+}
+
+export interface InitierDepotResponse {
+  transactionId: number;
+  reference: string;
+  token: string;
+  url: string;
+}
+
+export async function initierDepotApi(montant: number, description?: string): Promise<InitierDepotResponse> {
+  const res = await fetchWithAuth("/portefeuille/initier-depot", opts("POST", { montant, description }));
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message);
+  return data;
+}
+
+export async function confirmerDepotApi(reference: string): Promise<{ message: string; solde: number }> {
+  const res = await fetchWithAuth("/portefeuille/confirmer-depot", opts("POST", { reference }));
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message);
+  return data;
+}
+
+export async function reconfirmerDepotApi(transactionId: number): Promise<{ message: string; solde: number }> {
+  const res = await fetchWithAuth("/portefeuille/reconfirmer-depot", opts("POST", { transactionId }));
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message);
+  return data;
+}
+
+export interface RetraitResponse {
+  message: string;
+  solde: number;
+  transaction: {
+    id: number;
+    type: string;
+    montant: number;
+    statut: string;
+    description: string | null;
+    createdAt: string;
+  };
+}
+
+export async function retraitApi(montant: number, description?: string, telephone?: string): Promise<RetraitResponse> {
+  const res = await fetchWithAuth("/portefeuille/retrait", opts("POST", { montant, description, telephone }));
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message);
+  return data;
+}
+
+// ─── Dashboard ──────────────────────────────────────────────────────────────
+
+export interface DashboardData {
+  stats: {
+    actif: number;
+    en_attente: number;
+    cloture: number;
+    rejete: number;
+  };
+  budgetEngage: number;
+  solde: number;
+  depensesMois: number;
+  depotsMois: number;
+  campagnes: {
+    id: number;
+    nom: string;
+    statut: string;
+    budget: number;
+    dateDebut: string;
+    dateFin: string;
+    categorie: string | null;
+  }[];
+  evolution: {
+    date: string;
+    depenses: number;
+    depots: number;
+    budget: number;
+  }[];
+}
+
+export async function getDashboardApi(period?: string): Promise<DashboardData> {
+  const params = period ? `?period=${period}` : "";
+  const res = await fetchWithAuth(`/dashboard${params}`);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message);
+  return data;
+}
+
+// ─── Rapports ──────────────────────────────────────────────────────────────
+
+export interface RapportsData {
+  kpis: {
+    impressions: number;
+    portee: number;
+    frequence: number;
+    cpm: number;
+    budgetEngage: number;
+    solde: number;
+    depenses: number;
+  };
+  evolution: {
+    date: string;
+    depenses: number;
+    count: number;
+  }[];
+}
+
+export async function getRapportsApi(period?: string, statut?: string): Promise<RapportsData> {
+  const params = new URLSearchParams();
+  if (period) params.set("period", period);
+  if (statut && statut !== "tous") params.set("statut", statut);
+  const qs = params.toString();
+  const res = await fetchWithAuth(`/rapports${qs ? `?${qs}` : ""}`);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message);
+  return data;
+}

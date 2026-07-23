@@ -4,6 +4,45 @@ import path from "path";
 import { authMiddleware, AuthRequest } from "../middleware/authMiddleware";
 import prisma from "../lib/prisma";
 
+// Fonction pour vérifier le solde et effectuer le décaissement
+async function verifierEtDebiterPortefeuille(userId: number, montant: number, campagneId: number, description: string) {
+  // Récupérer le portefeuille
+  const portefeuille = await prisma.portefeuille.findUnique({
+    where: { userId },
+  });
+
+  if (!portefeuille) {
+    throw new Error("Portefeuille introuvable");
+  }
+
+  // Vérifier le solde
+  if (portefeuille.solde < montant) {
+    throw new Error(`Solde insuffisant. Solde actuel: ${portefeuille.solde} F, Montant requis: ${montant} F`);
+  }
+
+  // Effectuer le décaissement dans une transaction
+  await prisma.$transaction([
+    // Créer la transaction de dépense
+    prisma.transaction.create({
+      data: {
+        portefeuilleId: portefeuille.id,
+        type: "depense",
+        montant,
+        statut: "reussi",
+        description,
+        campagneId,
+      },
+    }),
+    // Déduire le montant du solde
+    prisma.portefeuille.update({
+      where: { id: portefeuille.id },
+      data: { solde: { decrement: montant } },
+    }),
+  ]);
+
+  return portefeuille.solde - montant;
+}
+
 const router = Router();
 
 const storage = multer.diskStorage({
@@ -89,47 +128,82 @@ router.post("/", authMiddleware, upload.single("media"), async (req: AuthRequest
     return arr.map(Number).filter(Boolean);
   };
 
-  const campagne = await prisma.campagne.create({
-    data: {
-      nom,
-      description: description || null,
-      dateDebut: new Date(dateDebut),
-      dateFin: new Date(dateFin),
-      heureDiffusion,
-      budget: Number(budget),
-      ageMin: ageMin ? Number(ageMin) : 18,
-      ageMax: ageMax ? Number(ageMax) : 99,
-      legende: legende || null,
-      annonceurId: req.user!.userId,
-      paysId: paysId ? Number(paysId) : null,
-      typeMediaId: typeMediaId ? Number(typeMediaId) : null,
-      categorieId: categorieId ? Number(categorieId) : null,
-      localites: {
-        create: parseIds(localiteIds).map((id) => ({ localiteId: id })),
+  try {
+    // Créer la campagne
+    const campagne = await prisma.campagne.create({
+      data: {
+        nom,
+        description: description || null,
+        dateDebut: new Date(dateDebut),
+        dateFin: new Date(dateFin),
+        heureDiffusion,
+        budget: Number(budget),
+        ageMin: ageMin ? Number(ageMin) : 18,
+        ageMax: ageMax ? Number(ageMax) : 99,
+        legende: legende || null,
+        annonceurId: req.user!.userId,
+        paysId: paysId ? Number(paysId) : null,
+        typeMediaId: typeMediaId ? Number(typeMediaId) : null,
+        categorieId: categorieId ? Number(categorieId) : null,
+        localites: {
+          create: parseIds(localiteIds).map((id) => ({ localiteId: id })),
+        },
+        professions: {
+          create: parseIds(professionIds).map((id) => ({ professionId: id })),
+        },
+        categoriesCiblage: {
+          create: parseIds(categorieCiblageIds).map((id) => ({ categorieCiblageId: id })),
+        },
+        ...(req.file
+          ? {
+              medias: {
+                create: [{ path: req.file.path, mimetype: req.file.mimetype }],
+              },
+            }
+          : {}),
       },
-      professions: {
-        create: parseIds(professionIds).map((id) => ({ professionId: id })),
+      include: {
+        pays: true,
+        categorie: true,
+        typeMedia: true,
+        medias: true,
       },
-      categoriesCiblage: {
-        create: parseIds(categorieCiblageIds).map((id) => ({ categorieCiblageId: id })),
-      },
-      ...(req.file
-        ? {
-            medias: {
-              create: [{ path: req.file.path, mimetype: req.file.mimetype }],
-            },
-          }
-        : {}),
-    },
-    include: {
-      pays: true,
-      categorie: true,
-      typeMedia: true,
-      medias: true,
-    },
-  });
+    });
 
-  return res.status(201).json(campagne);
+    // Vérifier le solde et effectuer le décaissement automatique
+    const budgetNum = Number(budget);
+    try {
+      const nouveauSolde = await verifierEtDebiterPortefeuille(
+        req.user!.userId,
+        budgetNum,
+        campagne.id,
+        `Décaissement pour campagne: ${nom}`
+      );
+
+      console.log(`✓ Décaissement effectué pour la campagne ${campagne.id}. Nouveau solde: ${nouveauSolde} F`);
+
+      return res.status(201).json({
+        ...campagne,
+        message: "Campagne créée avec succès",
+        soldeApresDepecaissement: nouveauSolde,
+      });
+    } catch (error: any) {
+      // Si le décaissement échoue, supprimer la campagne créée
+      await prisma.campagne.delete({ where: { id: campagne.id } });
+      
+      console.error("Erreur décaissement:", error.message);
+      return res.status(400).json({
+        message: error.message || "Solde insuffisant pour créer cette campagne",
+        requiresRecharge: true,
+        soldeActuel: error.message.includes("Solde insuffisant") ? 
+          (await prisma.portefeuille.findUnique({ where: { userId: req.user!.userId } }))?.solde : null,
+        montantRequis: budgetNum,
+      });
+    }
+  } catch (error: any) {
+    console.error("Erreur création campagne:", error);
+    return res.status(500).json({ message: "Erreur lors de la création de la campagne" });
+  }
 });
 
 // PUT /api/campagnes/:id — modification
@@ -189,6 +263,8 @@ router.put("/:id", authMiddleware, upload.single("media"), async (req: AuthReque
 
 // GET /api/campagnes/:id — détail
 router.get("/:id", authMiddleware, async (req: AuthRequest, res: Response) => {
+  await autoUpdateStatuts(req.user!.userId);
+
   const id = Number(req.params.id);
   const campagne = await prisma.campagne.findFirst({
     where: { id, annonceurId: req.user!.userId, deletedAt: null },
