@@ -66,6 +66,27 @@ router.post("/register", upload.single("pieceIdentite"), async (req: Request, re
   });
 
   setAuthCookie(res, user.id, user.role);
+
+  // Envoyer l'email de bienvenue
+  const welcomeHtml = getWelcomeEmailHtml(user.nom, user.prenoms, user.role);
+  try {
+    await transporter.sendMail({
+      from: `"StatutPay" <${process.env.SMTP_USER}>`,
+      to: user.email,
+      subject: "Bienvenue sur StatutPay ! 🎉",
+      html: welcomeHtml,
+      attachments: [
+        {
+          filename: "logo.png",
+          path: path.join(__dirname, "../../../public/logo.png"),
+          cid: "logo",
+        },
+      ],
+    });
+  } catch (err) {
+    console.error("Erreur envoi email bienvenue:", err);
+  }
+
   return res.status(201).json({ message: "Inscription réussie" });
 });
 
@@ -126,6 +147,27 @@ router.post("/google", async (req: Request, res: Response) => {
     });
 
     setAuthCookie(res, user.id, user.role);
+
+    // Envoyer l'email de bienvenue pour inscription Google
+    const welcomeHtml = getWelcomeEmailHtml(user.nom, user.prenoms, user.role);
+    try {
+      await transporter.sendMail({
+        from: `"StatutPay" <${process.env.SMTP_USER}>`,
+        to: user.email,
+        subject: "Bienvenue sur StatutPay ! 🎉",
+        html: welcomeHtml,
+        attachments: [
+          {
+            filename: "logo.png",
+            path: path.join(__dirname, "../../../public/logo.png"),
+            cid: "logo",
+          },
+        ],
+      });
+    } catch (err) {
+      console.error("Erreur envoi email bienvenue:", err);
+    }
+
     return res.json({ tempPassword, mustChangePassword: true, role: user.role });
   }
 
@@ -278,24 +320,14 @@ router.post("/forgot-password", async (req: Request, res: Response) => {
       from: `"StatutPay" <${process.env.SMTP_USER}>`,
       to: email,
       subject: "Réinitialisation de votre mot de passe StatutPay",
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 24px;">
-          <h2 style="color: #4c075b;">Réinitialisation de mot de passe</h2>
-          <p>Bonjour,</p>
-          <p>Vous avez demandé la réinitialisation de votre mot de passe StatutPay.</p>
-          <p>Cliquez sur le bouton ci-dessous pour choisir un nouveau mot de passe :</p>
-          <div style="text-align: center; margin: 32px 0;">
-            <a href="${resetLink}"
-               style="display: inline-block; padding: 12px 24px; background: #4c075b; color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold;">
-              Réinitialiser votre mot de passe
-            </a>
-          </div>
-          <p style="color: #666; font-size: 14px;">Ce lien expire dans 1 heure.</p>
-          <p style="color: #666; font-size: 14px;">Si vous n'êtes pas à l'origine de cette demande, ignorez simplement cet email.</p>
-          <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;" />
-          <p style="color: #999; font-size: 12px;">L'équipe StatutPay</p>
-        </div>
-      `,
+      html: getResetPasswordEmailHtml(resetLink),
+      attachments: [
+        {
+          filename: "logo.png",
+          path: path.join(__dirname, "../../../public/logo.png"),
+          cid: "logo",
+        },
+      ],
     });
   } catch (err) {
     // En mode dev, afficher le lien dans la console au lieu de bloquer
@@ -352,5 +384,163 @@ router.post("/reset-password", async (req: Request, res: Response) => {
 
   return res.json({ message: "Mot de passe réinitialisé avec succès." });
 });
+
+// ─── Template d'email de bienvenue ─────────────────────────────────────
+function getWelcomeEmailHtml(nom: string, prenoms: string, role: string): string {
+  const roleLabel = role === "annonceur" ? "Annonceur" : "Diffuseur";
+  const roleDescription = role === "annonceur"
+    ? "créer et gérer vos campagnes publicitaires, cibler votre audience et suivre les performances de vos annonces en temps réel"
+    : "diffuser des publicités sur votre établissement, générer des revenus supplémentaires et maximiser l'utilisation de vos espaces publicitaires";
+  const dashboardUrl = role === "annonceur" 
+    ? `${process.env.FRONTEND_URL}/dashboard/annonceur`
+    : `${process.env.FRONTEND_URL}/dashboard/diffuseur`;
+
+  return `
+    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+      
+      <!-- Header avec logo -->
+      <div style="background: linear-gradient(135deg, #4c075b 0%, #6b1d7a 100%); padding: 40px 20px; text-align: center;">
+        <img src="cid:logo" alt="StatutPay Logo" style="max-width: 180px; height: auto; display: block; margin: 0 auto;" />
+        <h1 style="color: #ffffff; font-size: 28px; margin-top: 20px; font-weight: 600;">Bienvenue sur StatutPay !</h1>
+      </div>
+
+      <!-- Corps de l'email -->
+      <div style="padding: 40px 30px;">
+        <p style="color: #333333; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+          Bonjour <strong>${prenoms} ${nom}</strong>,
+        </p>
+
+        <p style="color: #555555; font-size: 15px; line-height: 1.7; margin-bottom: 20px;">
+          Nous sommes ravis de vous accueillir sur <strong>StatutPay</strong> ! Votre inscription en tant que <strong style="color: #4c075b;">${roleLabel}</strong> a été confirmée avec succès.
+        </p>
+
+        <div style="background: linear-gradient(135deg, #f8f4fa 0%, #f0e8f5 100%); border-left: 4px solid #4c075b; padding: 20px; margin: 30px 0; border-radius: 8px;">
+          <h2 style="color: #4c075b; font-size: 18px; margin-top: 0; margin-bottom: 12px;">
+            ${role === "annonceur" ? "📢 En tant qu'Annonceur" : "📺 En tant que Diffuseur"}
+          </h2>
+          <p style="color: #555555; font-size: 14px; line-height: 1.7; margin: 0;">
+            StatutPay vous permet de ${roleDescription}. Notre plateforme innovante connecte les annonceurs et les diffuseurs pour créer un écosystème publicitaire efficace et performant.
+          </p>
+        </div>
+
+        <h3 style="color: #4c075b; font-size: 16px; margin-top: 30px; margin-bottom: 15px;">✨ Que pouvez-vous faire maintenant ?</h3>
+        
+        <ul style="color: #555555; font-size: 14px; line-height: 1.8; padding-left: 20px;">
+          ${role === "annonceur" 
+            ? `
+              <li>Créer votre première campagne publicitaire en quelques clics</li>
+              <li>Définir votre budget et votre audience cible</li>
+              <li>Suivre les performances de vos campagnes en temps réel</li>
+              <li>Analyser les rapports détaillés pour optimiser vos investissements</li>
+            `
+            : `
+              <li>Parcourir les campagnes disponibles dans votre région</li>
+              <li>Accepter les diffusions correspondant à votre établissement</li>
+              <li>Générer des revenus supplémentaires facilement</li>
+              <li>Suivre vos gains et votre historique de diffusions</li>
+            `
+          }
+        </ul>
+
+        <div style="text-align: center; margin: 35px 0;">
+          <a href="${dashboardUrl}" 
+             style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #4c075b 0%, #6b1d7a 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 15px; box-shadow: 0 4px 12px rgba(76, 7, 91, 0.3);">
+            Accéder à mon tableau de bord
+          </a>
+        </div>
+
+        <p style="color: #666666; font-size: 14px; line-height: 1.7; margin-top: 30px;">
+          Si vous avez des questions ou besoin d'assistance, n'hésitez pas à contacter notre équipe support. Nous sommes là pour vous accompagner dans votre expérience StatutPay.
+        </p>
+
+        <p style="color: #555555; font-size: 15px; line-height: 1.6; margin-top: 30px; margin-bottom: 10px;">
+          Bienvenue dans la communauté StatutPay !
+        </p>
+      </div>
+
+      <!-- Footer -->
+      <div style="background-color: #f8f9fa; padding: 25px 20px; text-align: center; border-top: 1px solid #e9ecef;">
+        <p style="color: #888888; font-size: 12px; margin: 5px 0;">
+          © 2026 <strong>StatutPay</strong>. Tous droits réservés.
+        </p>
+        <p style="color: #888888; font-size: 12px; margin: 5px 0;">
+          Plateforme de publicité innovante pour annonceurs et diffuseurs
+        </p>
+      </div>
+    </div>
+  `;
+}
+
+// ─── Template d'email de réinitialisation de mot de passe ───────────────
+function getResetPasswordEmailHtml(resetLink: string): string {
+  return `
+    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+      
+      <!-- Header avec logo -->
+      <div style="background: linear-gradient(135deg, #4c075b 0%, #6b1d7a 100%); padding: 40px 20px; text-align: center;">
+        <img src="cid:logo" alt="StatutPay Logo" style="max-width: 180px; height: auto; display: block; margin: 0 auto;" />
+        <h1 style="color: #ffffff; font-size: 28px; margin-top: 20px; font-weight: 600;">Réinitialisation de mot de passe</h1>
+      </div>
+
+      <!-- Corps de l'email -->
+      <div style="padding: 40px 30px;">
+        <p style="color: #333333; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+          Bonjour,
+        </p>
+
+        <p style="color: #555555; font-size: 15px; line-height: 1.7; margin-bottom: 20px;">
+          Vous avez demandé la réinitialisation de votre mot de passe <strong>StatutPay</strong>. Aucun problème, nous sommes là pour vous aider !
+        </p>
+
+        <div style="background: linear-gradient(135deg, #f8f4fa 0%, #f0e8f5 100%); border-left: 4px solid #4c075b; padding: 20px; margin: 30px 0; border-radius: 8px;">
+          <h2 style="color: #4c075b; font-size: 18px; margin-top: 0; margin-bottom: 12px;">
+            🔐 Créez un nouveau mot de passe
+          </h2>
+          <p style="color: #555555; font-size: 14px; line-height: 1.7; margin: 0;">
+            Cliquez sur le bouton ci-dessous pour accéder à la page de réinitialisation. Vous pourrez alors choisir un nouveau mot de passe sécurisé.
+          </p>
+        </div>
+
+        <div style="text-align: center; margin: 35px 0;">
+          <a href="${resetLink}" 
+             style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #4c075b 0%, #6b1d7a 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 15px; box-shadow: 0 4px 12px rgba(76, 7, 91, 0.3);">
+            Réinitialiser mon mot de passe
+          </a>
+        </div>
+
+        <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 25px 0; border-radius: 8px;">
+          <p style="color: #856404; font-size: 13px; line-height: 1.6; margin: 0;">
+            <strong>⏱️ Important :</strong> Ce lien expire dans <strong>1 heure</strong> pour des raisons de sécurité. Si vous n'avez pas demandé cette réinitialisation, vous pouvez ignorer cet email en toute sécurité.
+          </p>
+        </div>
+
+        <p style="color: #666666; font-size: 14px; line-height: 1.7; margin-top: 30px;">
+          Si le bouton ne fonctionne pas, vous pouvez copier et coller ce lien dans votre navigateur :
+        </p>
+        <p style="color: #4c075b; font-size: 13px; word-break: break-all; background-color: #f8f9fa; padding: 10px; border-radius: 6px; margin-top: 10px;">
+          ${resetLink}
+        </p>
+
+        <p style="color: #666666; font-size: 14px; line-height: 1.7; margin-top: 30px;">
+          Besoin d'aide ? Contactez notre équipe support à <a href="mailto:contact@statutpay.com" style="color: #4c075b; text-decoration: none; font-weight: 600;">contact@statutpay.com</a>
+        </p>
+
+        <p style="color: #555555; font-size: 15px; line-height: 1.6; margin-top: 30px; margin-bottom: 10px;">
+          L'équipe StatutPay
+        </p>
+      </div>
+
+      <!-- Footer -->
+      <div style="background-color: #f8f9fa; padding: 25px 20px; text-align: center; border-top: 1px solid #e9ecef;">
+        <p style="color: #888888; font-size: 12px; margin: 5px 0;">
+          © 2026 <strong>StatutPay</strong>. Tous droits réservés.
+        </p>
+        <p style="color: #888888; font-size: 12px; margin: 5px 0;">
+          Plateforme de publicité innovante pour annonceurs et diffuseurs
+        </p>
+      </div>
+    </div>
+  `;
+}
 
 export default router;

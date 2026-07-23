@@ -56,7 +56,8 @@ export default function Register() {
         sessionStorage.setItem("mustChangePassword", "true");
         sessionStorage.setItem("tempPassword", data.tempPassword);
       }
-      navigate("/dashboard");
+      const dashboardPath = role === "annonceur" ? "/dashboard/annonceur" : "/dashboard/diffuseur";
+      navigate(dashboardPath);
     } catch (e: any) { setError(e.message); }
   };
 
@@ -88,7 +89,8 @@ export default function Register() {
       }
       fd.append("role", role);
       await registerApi(fd);
-      navigate("/dashboard");
+      const dashboardPath = role === "annonceur" ? "/dashboard/annonceur" : "/dashboard/diffuseur";
+      navigate(dashboardPath);
     } catch (e: any) {
       setError(e.message);
     } finally {

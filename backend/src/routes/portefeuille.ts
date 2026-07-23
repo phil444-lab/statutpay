@@ -2,12 +2,46 @@ import { Router, Response } from "express";
 import { authMiddleware, AuthRequest } from "../middleware/authMiddleware";
 import { PrismaClient } from "@prisma/client";
 import axios from "axios";
+import nodemailer from "nodemailer";
+import path from "path";
 
 const router = Router();
 const prisma = new PrismaClient();
 
 const FEDAPAY_API_KEY = process.env.FEDAPAY_API_KEY || "";
 const FEDAPAY_BASE = "https://sandbox-api.fedapay.com/v1";
+
+// Configuration Nodemailer pour les emails
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: Number(process.env.SMTP_PORT),
+  secure: false,
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
+
+// Fonction helper pour envoyer un email
+async function sendEmail(to: string, subject: string, html: string) {
+  try {
+    await transporter.sendMail({
+      from: `"StatutPay" <${process.env.SMTP_USER}>`,
+      to,
+      subject,
+      html,
+      attachments: [
+        {
+          filename: "logo.png",
+          path: path.join(__dirname, "../../../public/logo.png"),
+          cid: "logo",
+        },
+      ],
+    });
+  } catch (error) {
+    console.error("Erreur envoi email:", error);
+  }
+}
 
 const fedapayHeaders = () => ({
   Authorization: `Bearer ${FEDAPAY_API_KEY}`,
@@ -266,6 +300,13 @@ router.post("/confirmer-depot", authMiddleware, async (req: AuthRequest, res: Re
         where: { id: transaction.portefeuilleId },
       });
 
+      // Envoyer l'email de confirmation de dépôt
+      const user = await prisma.user.findUnique({ where: { id: transaction.portefeuille.userId } });
+      if (user) {
+        const depositHtml = getDepositEmailHtml(transaction.montant, transaction.reference!, portefeuille!.solde);
+        await sendEmail(user.email, "Dépôt confirmé ! ✅", depositHtml);
+      }
+
       res.json({ message: "Dépôt confirmé avec succès", solde: portefeuille?.solde });
     } else {
       await prisma.transaction.updateMany({
@@ -335,6 +376,13 @@ router.post("/reconfirmer-depot", authMiddleware, async (req: AuthRequest, res: 
       const portefeuille = await prisma.portefeuille.findUnique({
         where: { id: transaction.portefeuilleId },
       });
+
+      // Envoyer l'email de confirmation de dépôt
+      const user = await prisma.user.findUnique({ where: { id: transaction.portefeuille.userId } });
+      if (user) {
+        const depositHtml = getDepositEmailHtml(transaction.montant, transaction.reference || `DEP-${Date.now()}`, portefeuille!.solde);
+        await sendEmail(user.email, "Dépôt confirmé ! ✅", depositHtml);
+      }
 
       res.json({ message: "Dépôt confirmé avec succès", solde: portefeuille?.solde });
     } else {
@@ -412,6 +460,10 @@ router.post("/retrait", authMiddleware, async (req: AuthRequest, res: Response) 
     });
 
     const nouveauSolde = portefeuille.solde - montant;
+
+    // Envoyer l'email de confirmation de retrait
+    const withdrawalHtml = getWithdrawalEmailHtml(montant, transaction.reference || `RET-${Date.now()}`, nouveauSolde, telephonePayout);
+    await sendEmail(user.email, "Retrait effectué ! 💸", withdrawalHtml);
 
     // Effectuer le payout (reversement) via FedaPay
     let payoutResult = null;
@@ -555,56 +607,188 @@ router.post("/webhook", async (req, res) => {
   }
 });
 
-// ─── GET /api/portefeuille/test-fedapay ──────────────────────────────────
-// Endpoint de test pour vérifier la connexion FedaPay
-router.get("/test-fedapay", authMiddleware, async (req: AuthRequest, res: Response) => {
-  try {
-    console.log("=== TEST CONNEXION FEDAPAY ===");
-    console.log("API Key:", FEDAPAY_API_KEY.substring(0, 15) + "...");
-    
-    // Test 1: Vérifier le compte
-    const accountResp = await axios.get(
-      `${FEDAPAY_BASE}/account`,
-      { headers: fedapayHeaders() }
-    );
-    console.log("✓ Compte FedaPay:", accountResp.data);
+// ─── Template d'email de confirmation de dépôt ──────────────────────────
+function getDepositEmailHtml(montant: number, reference: string, solde: number): string {
+  const date = new Date().toLocaleDateString('fr-FR', { 
+    day: 'numeric', 
+    month: 'long', 
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
 
-    // Test 2: Créer un customer de test
-    const testCustomer = {
-      firstname: "Test",
-      lastname: "User",
-      email: `test${Date.now()}@example.com`,
-      phone_number: {
-        number: "+22961000022",
-        country: "bj",
-      },
-    };
+  return `
+    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+      
+      <!-- Header avec logo -->
+      <div style="background: linear-gradient(135deg, #4c075b 0%, #6b1d7a 100%); padding: 40px 20px; text-align: center;">
+        <img src="cid:logo" alt="StatutPay Logo" style="max-width: 180px; height: auto; display: block; margin: 0 auto;" />
+        <h1 style="color: #ffffff; font-size: 28px; margin-top: 20px; font-weight: 600;">Dépôt confirmé ! ✅</h1>
+      </div>
 
-    const customerResp = await axios.post(
-      `${FEDAPAY_BASE}/customers`,
-      testCustomer,
-      { headers: fedapayHeaders() }
-    );
-    console.log("✓ Customer de test créé:", customerResp.data);
+      <!-- Corps de l'email -->
+      <div style="padding: 40px 30px;">
+        <p style="color: #333333; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+          Bonjour,
+        </p>
 
-    res.json({
-      message: "Connexion FedaPay OK",
-      account: accountResp.data,
-      customer: customerResp.data,
-    });
-  } catch (error: any) {
-    console.error("=== ERREUR TEST FEDAPAY ===");
-    console.error("Status:", error.response?.status);
-    console.error("Data:", JSON.stringify(error.response?.data, null, 2));
-    console.error("Message:", error.message);
-    
-    res.status(500).json({
-      message: "Erreur de connexion à FedaPay",
-      status: error.response?.status,
-      data: error.response?.data,
-      error: error.message,
-    });
-  }
-});
+        <p style="color: #555555; font-size: 15px; line-height: 1.7; margin-bottom: 20px;">
+          Excellente nouvelle ! Votre dépôt sur votre portefeuille <strong>StatutPay</strong> a été confirmé avec succès.
+        </p>
+
+        <!-- Carte de confirmation -->
+        <div style="background: linear-gradient(135deg, #f8f4fa 0%, #f0e8f5 100%); border-left: 4px solid #28a745; padding: 25px; margin: 30px 0; border-radius: 8px;">
+          <h2 style="color: #4c075b; font-size: 18px; margin-top: 0; margin-bottom: 20px;">
+            💰 Récapitulatif du dépôt
+          </h2>
+          
+          <div style="background-color: #ffffff; padding: 20px; border-radius: 8px; margin-bottom: 15px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e9ecef;">
+              <span style="color: #666666; font-size: 14px;">Montant déposé</span>
+              <span style="color: #28a745; font-size: 16px; font-weight: bold;">+ ${montant.toLocaleString('fr-FR')} F</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e9ecef;">
+              <span style="color: #666666; font-size: 14px;">Référence</span>
+              <span style="color: #4c075b; font-size: 13px; font-weight: 600;">${reference}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e9ecef;">
+              <span style="color: #666666; font-size: 14px;">Date</span>
+              <span style="color: #555555; font-size: 14px;">${date}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: #666666; font-size: 14px; font-weight: 600;">Nouveau solde</span>
+              <span style="color: #4c075b; font-size: 16px; font-weight: bold;">${solde.toLocaleString('fr-FR')} F</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="background-color: #d4edda; border-left: 4px solid #28a745; padding: 15px; margin: 25px 0; border-radius: 8px;">
+          <p style="color: #155724; font-size: 14px; line-height: 1.6; margin: 0;">
+            <strong>✓ Confirmation :</strong> Les fonds sont maintenant disponibles sur votre portefeuille. Vous pouvez les utiliser pour créer des campagnes publicitaires.
+          </p>
+        </div>
+
+        <div style="text-align: center; margin: 35px 0;">
+          <a href="${process.env.FRONTEND_URL}/dashboard/annonceur/portefeuille" 
+             style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #4c075b 0%, #6b1d7a 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 15px; box-shadow: 0 4px 12px rgba(76, 7, 91, 0.3);">
+            Voir mon portefeuille
+          </a>
+        </div>
+
+        <p style="color: #666666; font-size: 14px; line-height: 1.7; margin-top: 30px;">
+          Besoin d'aide ? Contactez notre équipe support à <a href="mailto:contact@statutpay.com" style="color: #4c075b; text-decoration: none; font-weight: 600;">contact@statutpay.com</a>
+        </p>
+
+        <p style="color: #555555; font-size: 15px; line-height: 1.6; margin-top: 30px; margin-bottom: 10px;">
+          L'équipe StatutPay
+        </p>
+      </div>
+
+      <!-- Footer -->
+      <div style="background-color: #f8f9fa; padding: 25px 20px; text-align: center; border-top: 1px solid #e9ecef;">
+        <p style="color: #888888; font-size: 12px; margin: 5px 0;">
+          © 2025 <strong>StatutPay</strong>. Tous droits réservés.
+        </p>
+        <p style="color: #888888; font-size: 12px; margin: 5px 0;">
+          Plateforme de publicité innovante pour annonceurs et diffuseurs
+        </p>
+      </div>
+    </div>
+  `;
+}
+
+// ─── Template d'email de confirmation de retrait ─────────────────────────
+function getWithdrawalEmailHtml(montant: number, reference: string, solde: number, telephone: string): string {
+  const date = new Date().toLocaleDateString('fr-FR', { 
+    day: 'numeric', 
+    month: 'long', 
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+
+  return `
+    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+      
+      <!-- Header avec logo -->
+      <div style="background: linear-gradient(135deg, #4c075b 0%, #6b1d7a 100%); padding: 40px 20px; text-align: center;">
+        <img src="cid:logo" alt="StatutPay Logo" style="max-width: 180px; height: auto; display: block; margin: 0 auto;" />
+        <h1 style="color: #ffffff; font-size: 28px; margin-top: 20px; font-weight: 600;">Retrait effectué 💸</h1>
+      </div>
+
+      <!-- Corps de l'email -->
+      <div style="padding: 40px 30px;">
+        <p style="color: #333333; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+          Bonjour,
+        </p>
+
+        <p style="color: #555555; font-size: 15px; line-height: 1.7; margin-bottom: 20px;">
+          Votre demande de retrait a été traitée avec succès. Les fonds ont été transférés vers votre compte Mobile Money.
+        </p>
+
+        <!-- Carte de confirmation -->
+        <div style="background: linear-gradient(135deg, #f8f4fa 0%, #f0e8f5 100%); border-left: 4px solid #17a2b8; padding: 25px; margin: 30px 0; border-radius: 8px;">
+          <h2 style="color: #4c075b; font-size: 18px; margin-top: 0; margin-bottom: 20px;">
+            💳 Récapitulatif du retrait
+          </h2>
+          
+          <div style="background-color: #ffffff; padding: 20px; border-radius: 8px; margin-bottom: 15px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e9ecef;">
+              <span style="color: #666666; font-size: 14px;">Montant retiré</span>
+              <span style="color: #17a2b8; font-size: 16px; font-weight: bold;">- ${montant.toLocaleString('fr-FR')} F</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e9ecef;">
+              <span style="color: #666666; font-size: 14px;">Référence</span>
+              <span style="color: #4c075b; font-size: 13px; font-weight: 600;">${reference}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e9ecef;">
+              <span style="color: #666666; font-size: 14px;">Date</span>
+              <span style="color: #555555; font-size: 14px;">${date}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e9ecef;">
+              <span style="color: #666666; font-size: 14px;">Destinataire</span>
+              <span style="color: #555555; font-size: 14px;">${telephone}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: #666666; font-size: 14px; font-weight: 600;">Nouveau solde</span>
+              <span style="color: #4c075b; font-size: 16px; font-weight: bold;">${solde.toLocaleString('fr-FR')} F</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="background-color: #d1ecf1; border-left: 4px solid #17a2b8; padding: 15px; margin: 25px 0; border-radius: 8px;">
+          <p style="color: #0c5460; font-size: 14px; line-height: 1.6; margin: 0;">
+            <strong>ℹ️ Information :</strong> Le transfert vers votre compte Mobile Money est en cours. Vous recevrez les fonds dans les prochaines minutes selon votre opérateur.
+          </p>
+        </div>
+
+        <div style="text-align: center; margin: 35px 0;">
+          <a href="${process.env.FRONTEND_URL}/dashboard/annonceur/portefeuille" 
+             style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #4c075b 0%, #6b1d7a 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 15px; box-shadow: 0 4px 12px rgba(76, 7, 91, 0.3);">
+            Voir mon portefeuille
+          </a>
+        </div>
+
+        <p style="color: #666666; font-size: 14px; line-height: 1.7; margin-top: 30px;">
+          Besoin d'aide ? Contactez notre équipe support à <a href="mailto:contact@statutpay.com" style="color: #4c075b; text-decoration: none; font-weight: 600;">contact@statutpay.com</a>
+        </p>
+
+        <p style="color: #555555; font-size: 15px; line-height: 1.6; margin-top: 30px; margin-bottom: 10px;">
+          L'équipe StatutPay
+        </p>
+      </div>
+
+      <!-- Footer -->
+      <div style="background-color: #f8f9fa; padding: 25px 20px; text-align: center; border-top: 1px solid #e9ecef;">
+        <p style="color: #888888; font-size: 12px; margin: 5px 0;">
+          © 2025 <strong>StatutPay</strong>. Tous droits réservés.
+        </p>
+        <p style="color: #888888; font-size: 12px; margin: 5px 0;">
+          Plateforme de publicité innovante pour annonceurs et diffuseurs
+        </p>
+      </div>
+    </div>
+  `;
+}
 
 export default router;
