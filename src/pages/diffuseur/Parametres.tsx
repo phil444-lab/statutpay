@@ -149,13 +149,6 @@ export default function Parametres() {
       {/* Informations du profil */}
       <SectionCard icon={<User size={16} />} title="Informations du profil">
         <form onSubmit={handleSaveProfile} className="flex flex-col gap-4">
-          <div>
-            <label className={labelClass}>Nom de l'entreprise <span className="normal-case font-normal text-gray-400">(facultatif)</span></label>
-            <input type="text" value={profile.nomEntreprise} placeholder="Ex: MonEntreprise SARL"
-              onChange={(e) => setProfile({ ...profile, nomEntreprise: e.target.value })}
-              className={inputClass} />
-          </div>
-
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className={labelClass}>Nom</label>
