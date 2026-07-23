@@ -7,6 +7,7 @@ import multer from "multer";
 import path from "path";
 import nodemailer from "nodemailer";
 import prisma from "../lib/prisma";
+import { Role } from "@prisma/client";
 
 const router = Router();
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -52,8 +53,11 @@ router.post("/register", upload.single("pieceIdentite"), async (req: Request, re
   if (!PASSWORD_REGEX.test(password))
     return res.status(400).json({ message: "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial." });
 
-  const existing = await prisma.user.findUnique({ where: { email } });
-  if (existing) return res.status(409).json({ message: "Email déjà utilisé" });
+  // Vérifier si un compte avec cet email + rôle existe déjà (contrainte @@unique([email, role]))
+  const existing = await prisma.user.findFirst({
+    where: { email, role: role as Role },
+  });
+  if (existing) return res.status(409).json({ message: `Un compte ${role} avec cet email existe déjà` });
 
   const hashed = await bcrypt.hash(password, 10);
   const user = await prisma.user.create({
@@ -94,12 +98,14 @@ router.post("/register", upload.single("pieceIdentite"), async (req: Request, re
 router.post("/login", async (req: Request, res: Response) => {
   const { email, password, role } = req.body;
 
-  const user = await prisma.user.findUnique({ where: { email } });
-  if (!user || !user.password || user.deletedAt)
-    return res.status(401).json({ message: "Identifiants incorrects" });
+  if (!role) return res.status(400).json({ message: "Veuillez sélectionner un profil" });
 
-  if (user.role !== role)
-    return res.status(403).json({ message: "Profil incorrect pour ce compte" });
+  // Chercher par email + rôle (contrainte @@unique([email, role]))
+  const user = await prisma.user.findFirst({
+    where: { email, role: role as Role, deletedAt: null },
+  });
+  if (!user || !user.password)
+    return res.status(401).json({ message: "Identifiants incorrects" });
 
   const valid = await bcrypt.compare(password, user.password);
   if (!valid) return res.status(401).json({ message: "Identifiants incorrects" });
@@ -122,7 +128,11 @@ router.post("/google", async (req: Request, res: Response) => {
   const payload = ticket.getPayload();
   if (!payload?.email) return res.status(400).json({ message: "Token Google invalide" });
 
-  let user = await prisma.user.findUnique({ where: { email: payload.email } });
+  // Chercher un utilisateur avec cet email ET ce rôle
+  // La contrainte @@unique([email, role]) permet d'avoir annonceur@email.com + diffuseur@email.com
+  let user = role
+    ? await prisma.user.findFirst({ where: { email: payload.email, role: role as Role } })
+    : null;
 
   // Si le compte a été supprimé, refuser la connexion
   if (user?.deletedAt) {
@@ -135,16 +145,25 @@ router.post("/google", async (req: Request, res: Response) => {
     const tempPassword = Buffer.from(crypto.getRandomValues(new Uint8Array(10))).toString("base64url");
     const hashed = await bcrypt.hash(tempPassword, 10);
 
-    user = await prisma.user.create({
-      data: {
-        email: payload.email,
-        nom: payload.family_name ?? "",
-        prenoms: payload.given_name ?? "",
-        googleId: payload.sub,
-        password: hashed,
-        role,
-      },
+    // Vérifier si un compte avec ce googleId + rôle existe déjà
+    const existingWithGoogle = await prisma.user.findFirst({
+      where: { googleId: payload.sub, role: role as Role },
     });
+
+    if (existingWithGoogle) {
+      user = existingWithGoogle;
+    } else {
+      user = await prisma.user.create({
+        data: {
+          email: payload.email,
+          nom: payload.family_name ?? "",
+          prenoms: payload.given_name ?? "",
+          googleId: payload.sub,
+          password: hashed,
+          role,
+        },
+      });
+    }
 
     setAuthCookie(res, user.id, user.role);
 
@@ -168,17 +187,7 @@ router.post("/google", async (req: Request, res: Response) => {
       console.error("Erreur envoi email bienvenue:", err);
     }
 
-    return res.json({ tempPassword, mustChangePassword: true, role: user.role });
-  }
-
-  // L'utilisateur existe déjà
-  // Si un rôle est demandé et qu'il est différent du rôle actuel, on le met à jour
-  // Cela permet à un même compte Google de passer d'annonceur à diffuseur (et vice-versa)
-  if (role && role !== user.role) {
-    user = await prisma.user.update({
-      where: { id: user.id },
-      data: { role: role as any },
-    });
+    return res.json({ tempPassword: tempPassword, mustChangePassword: true, role: user.role });
   }
 
   setAuthCookie(res, user.id, user.role);
@@ -319,17 +328,19 @@ router.post("/forgot-password", async (req: Request, res: Response) => {
   if (!email || !EMAIL_REGEX.test(email))
     return res.status(400).json({ message: "Adresse email invalide" });
 
-  const user = await prisma.user.findUnique({ where: { email } });
+  // Chercher le premier utilisateur avec cet email (peu importe le rôle)
+  const users = await prisma.user.findMany({ where: { email } });
   // Ne pas révéler si l'email existe ou pas (sécurité)
-  if (!user) {
+  if (users.length === 0) {
     return res.json({ message: "Si cet email existe, un lien de réinitialisation vous a été envoyé." });
   }
 
   const resetToken = crypto.randomBytes(32).toString("hex");
   const resetTokenExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 heure
 
-  await prisma.user.update({
-    where: { id: user.id },
+  // Mettre à jour tous les comptes avec cet email (annonceur + diffuseur)
+  await prisma.user.updateMany({
+    where: { email },
     data: { resetToken, resetTokenExpires },
   });
 

@@ -9,7 +9,7 @@ datasource db {
 
 model User {
   id                Int        @id @default(autoincrement())
-  email             String     @unique
+  email             String
   password          String?
   nom               String
   prenoms           String
@@ -17,13 +17,16 @@ model User {
   nomEntreprise     String?
   pieceIdentitePath String?
   role              Role
-  googleId          String?    @unique
+  googleId          String?
   resetToken        String?    @unique
   resetTokenExpires DateTime?
   createdAt         DateTime   @default(now())
   deletedAt         DateTime?
   campagnes         Campagne[]
   portefeuille      Portefeuille?
+
+  @@unique([email, role])
+  @@unique([googleId, role])
 }
 
 enum Role {
